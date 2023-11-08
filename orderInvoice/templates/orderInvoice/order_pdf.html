@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order_pdf</title>
+    <style>
+        body{
+            font-size: 14px;
+        }
+        tr.head td ,
+        tr.footer td {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        tr.footer td {
+            font-size: 14px;
+        }
+        tr.item td{
+            padding-top: 3px;
+            padding-bottom: 3px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Invoie #{{ order.id }}</h1>
+        <h2>Shipping Address</h2>
+        <p>
+            {{ order.username }}<br>
+            {{ order.shipping_address }}<br>
+        </p>
+        <h2>Products</h2>
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td></td>
+                <td>Name</td>
+                <td>Color</td>
+                <td>Brand</td>
+                <td>Quantity</td>
+                <td>Price</td>
+
+            </tr>
+        {% for item in order_items %}
+        <tr class="item">
+            <td>
+                {% if item.product.thumpnail.url %}
+                    <img src="{{item.product.image.url}}" width="40" alt="">
+                {% endif %}
+            </td>
+            <td>{{ item.product.product_name }}</td>
+            <td>{{ item.product.color }}</td>
+            <td>{{ item.product.brand}}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.selling_price }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="footer">
+            <td></td>
+            <td colspan="3">Total</td>
+            <td>{{ order.total_amount }}</td>
+        </tr>
+        </table>
+        <h2>Cyber Shopping</h2>
+        <p>Thanks for ordering from us!</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% load custom_filters %}
+{% load static %}
+	<!-- Start related-product Area -->
+	<section class="related-product-area section_gap_bottom">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-lg-6 text-center">
+					<div class="section-title">
+						<h1>Deals of the Week</h1>
+						<p>buy now at the lowest rates in the world</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-9">
+					<div class="row">
+
+
+						{% for product in sale_items %}
+							<div class="col-lg-4 col-md-4 col-sm-6 mb-20">
+								<div class="single-related-product d-flex">
+									<a href="{% url 'product_detail' product.id %}">
+										<img src="{{ product.image.url }}" alt="" style="max-width: 100px; max-height: 100px;">
+									</a>
+									<div class="desc">
+										<a href="#" class="title">Black lace Heels</a>
+										<div class="price">
+											<h6>
+												{% if product.offer.is_active == True %}
+													₹{{ product.price|offer_price:product.offer.discount_percentage }}
+													<h6 class="l-through">₹{{ product.price }}</h6>
+												{% else %}
+													₹{{product.price}}
+												{% endif %}
+											</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+
+
+					</div>
+				</div>
+				<div class="col-lg-3">
+					<div class="ctg-right">
+						<a href="#" target="_blank">
+							<img class="img-fluid d-block mx-auto" src="{% static 'img/category/c5.jpg' %}" alt="">
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End related-product Area -->

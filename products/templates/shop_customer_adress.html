@@ -1,0 +1,242 @@
+{% extends 'shopbase.html' %}
+{% load static %}
+
+{% block head %}
+    <style>
+        .gradient-custom {
+        /* fallback for old browsers */
+        background: #f6d365;
+
+        /* Chrome 10-25, Safari 5.1-6 */
+        background: -webkit-linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
+
+        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1))
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb" style="height: 233px;">
+    <div class="container">
+
+      <div class=" ">
+          
+        </div>
+
+
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+
+          <div class="col-first" >
+            <h1>User Profile</h1>
+            <nav class="d-flex align-items-center">
+                <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                <a href="category.html">User</a>
+            </nav>
+        </div>
+
+            
+        </div>
+
+    </div>
+</section>
+<!-- End Banner Area -->
+<section style="background-color: #eee;">
+    <div class="container py-5">
+  
+      <div class="row">
+
+        <div class="col-lg-4">
+          <div class="card mb-12">
+            <div class="card-body text-center">
+              <div>
+                {% if user.image %}
+                <img id="user-avatar" src="{{ user.image.url }}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
+                {% else %}
+                    <img id="user-avatar" src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                {% endif %}
+                {% if edit %}
+                <div class="image-upload">
+                  <label for="file-input" class="btn" style="border-radius: 50%; width: 50px; height: 50px; background-color: #fe6d00; color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                    add+
+                  </label>
+                  <input id="file-input" name="image" type="file" style="display: none;">
+                </div>
+            {% endif %}
+              </div>
+             
+              <h5 class="my-3">{{ user.username }}</h5>
+              <p class="text-muted mb-1">{{ user.phone }}</p>
+              <p class="text-muted mb-4">{{ user.email }}</p>
+            </div>
+
+            <div class="col-lg-12">
+              <div class="col-sm-12">
+                <a class="btn btn-primary btn-lg" href="{% url 'customer_profile' request.user.id %}" style="width: inherit; margin-bottom: 10px; background: rgb(222, 44, 4);
+                background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Profile</a>
+              </div>
+              <div class="col-sm-12">
+                <a class="btn btn-primary btn-lg" href="{% url 'orders' %}"" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Orders</a>
+              </div>
+              <div class="col-sm-12">
+                <a class="btn btn-primary btn-lg" href="{% url 'customer_adress' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Address</a>
+              </div>
+             
+                <div class="col-sm-12">
+                  <a class="btn btn-primary btn-lg" href="" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                  background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Cupons</a>
+                </div>
+                <div class="col-sm-12">
+                  <a class="btn btn-primary btn-lg" href="{% url 'password_reset' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                  background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Change Password</a>
+                </div>
+                <div class="col-sm-12">
+                  <a class="btn btn-primary btn-lg" href="{% url 'wallet_view' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                  background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Wallet</a>
+                </div>
+                <div class="col-sm-12">
+                  <a class="btn btn-primary btn-lg" href="{% url 'customer_referals' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                  background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Referals</a>
+                </div>
+              
+          </div>
+
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="mb-8">
+            {% if edit %}
+              <form action="{% url 'edit_address' id %}" method="post">
+            {% else %}
+              <form action="{% url 'add_address' %}" method="post">
+            {% endif %}
+                {% csrf_token %}
+
+                <input type="hidden" name="user" value="{{ request.user.id }}">
+
+                  <h4 class="font-weight-semi-bold mb-4">Billing Address</h4>
+      
+                  <div class="form-group">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <label for="{{ form.street_address.id_for_label }}" class="form-label">Street Address</label>
+                          </div>
+                          <div class="col-md-9">
+                              {{ form.street_address }}
+                          </div>
+                      </div>
+                  </div>
+      
+                  <div class="form-group">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <label for="{{ form.city.id_for_label }}" class="form-label">City</label>
+                          </div>
+                          <div class="col-md-9">
+                              {{ form.city }}
+                          </div>
+                      </div>
+                  </div>
+      
+                  <div class="form-group">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <label for="{{ form.state.id_for_label }}" class="form-label">State</label>
+                          </div>
+                          <div class="col-md-9">
+                              {{ form.state }}
+                          </div>
+                      </div>
+                  </div>
+      
+                  <div class="form-group">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                          </div>
+                          <div class="col-md-9">
+                              {{ form.phone_number }}
+                          </div>
+                      </div>
+                  </div>
+      
+                  <div class="form-group">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <label for="{{ form.postal_code.id_for_label }}" class "form-label">Postal Code</label>
+                          </div>
+                          <div class="col-md-9">
+                              {{ form.postal_code }}
+                          </div>
+                      </div>
+                  </div>
+      
+                  <div class="form-group">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <label for="{{ form.country.id_for_label }}" class="form-label">Country</label>
+                          </div>
+                          <div class="col-md-9">
+                              {{ form.country }}
+                          </div>
+                      </div>
+                  </div>
+      
+                  <div class="form-group">
+                      <div class="row">
+                        {% if edit%}
+                          <div class="col-md-12">
+                            <button class="genric-btn primary">Update</button>
+                        </div>
+                        {% else %}
+                          <div class="col-md-12">
+                              <button class="genric-btn primary">Add Address</button>
+                          </div>
+                        {% endif %}
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+      <div class="address-cards" style="max-height: 600px; overflow-y: auto; border: 1px solid #ccc; background-color: #f8f8f8; padding: 10px;">
+        <div class="address-card-container" style="display: flex; flex-direction: column; gap: 20px;">
+          {% for address in addresses %}
+            <div class="address-card" style="border: 1px solid #ddd; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif; color: #333;">
+              <h1 class="address-card-title" style="background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); color: #fff; padding: 10px; margin: -20px -20px 10px -20px; border-top-left-radius: 10px; border-top-right-radius: 10px;">Address<a class="genric-btn info circle arrow" href="{% url 'edit_address' address.id %}" style="background: transparent; border-color: transparent;">edit</a></h1>
+              <div class="address-details">
+                <p style="margin: 5px 0;"><strong>Street Address:</strong> {{ address.street_address }}</p>
+                <p style="margin: 5px 0;"><strong>City:</strong> {{ address.city }}</p>
+                <p style="margin: 5px 0;"><strong>State:</strong> {{ address.state }}</p>
+                <p style="margin: 5px 0;"><strong>Postal Code:</strong> {{ address.postal_code }}</p>
+                <p style="margin: 5px 0;"><strong>Country:</strong> {{ address.country }}</p>
+                <p style="margin: 5px 0;"><strong>Phone Number:</strong> {{ address.phone_number }}</p>
+              </div>
+              <a href="{% url 'remove_address' address.id %}" class="genric-btn danger-border circle" style="display: flex; justify-content: center;"> delete </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+     
+    </div>
+  </section>
+  {% if edit %}
+  
+<script>
+    document.getElementById('file-input').addEventListener('change', function (e) {
+        var file = e.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                document.getElementById('user-avatar').src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endif %}
+{% endblock body %}
+
+

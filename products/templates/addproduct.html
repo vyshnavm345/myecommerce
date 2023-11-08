@@ -1,0 +1,27 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+
+{% for message in messages %}
+    <p class="alert alert-{{message.tags}}">{{message}}</p>
+{% endfor %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="mt-4">Add New Product</h2>
+            {% for category in categories %}
+                {% if category.verified %}
+                    <a href="{% url 'add_new_product' category.id %}" class="btn btn-primary">{{category }}</a>
+                {% endif %}
+            {% endfor %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- {{ form.as_p }} -->
+                <!-- <button type="submit" class="btn btn-primary">Add Product</button> -->
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock body %}

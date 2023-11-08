@@ -1,0 +1,50 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+
+
+{% for message in messages %}
+    <p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+    setTimeout(() => {
+        $(".alert").alert("close");
+    }, 3000)
+</script>
+<div class="container">
+    <div class="row">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Brands
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Brand Name</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Brand Name</th>
+                            <th>Edit</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for brand in brands %}
+                    <tr>
+                        <td>{{brand}}</td>
+                        <td><a href="{% url 'edit_brand' brand.id %}" class="btn btn-primary btn-sm">Edit</a></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

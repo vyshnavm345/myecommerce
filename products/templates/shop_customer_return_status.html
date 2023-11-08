@@ -1,0 +1,98 @@
+{% extends 'shopbase.html' %}
+{% load static %}
+
+{% block head %}
+    <!-- <style>
+        .gradient-custom {
+        /* fallback for old browsers */
+        background: #f6d365;
+
+        /* Chrome 10-25, Safari 5.1-6 */
+        background: -webkit-linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
+
+        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1))
+        }
+    </style> -->
+{% endblock head %}
+
+{% block body %}
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb" style="height: 233px;">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+                <div class="col-first">
+                    <h1>Product Return </h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="single-product.html">Success</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+<!-- disseparing messages -->
+{% for message in messages %}
+<p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+setTimeout(() => {
+    $(".alert").alert("close");
+}, 2000)
+</script>
+<!-- End disseparing messages --> 
+    <!--================Checkout Area =================-->
+    <section class="checkout_area section_gap">
+        <div class="container">
+            <div class="billing_details">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="details_item">
+                            <h4>Return Status</h4>
+                            <ul class="list">
+                                <li><span>Order Date</span> : {{ order_item.order.order_date }}</li>
+                                <li><span>Return request Date</span> : {{ order_item.order.order_date }}</li>
+                                <li><span>Order number</span> : {{ order_item.order.id }}</li>
+                                <li><span>Status</span> : Check payments</li>
+                            </ul>
+                        </div>
+                        <div class="order_details_table">
+                            <h2>Returns</h2>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            
+                                            <th scope="col">Return request date</th>
+                                            <th scope="col">Product</th>
+                                            <!-- <th scope="col">Quantity</th> -->
+                                            <th scope="col">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                       {% for item in returned %}
+                                        <tr>
+                                            <td>
+                                                <h5>{{ item.return_date }}</h5>
+                                            </td>
+                                            <td>
+                                                <h5>{{ item.product.product_name }}</h5>
+                                            </td>
+                                            <td>
+                                                <h5>{{ item.status }}</h5>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!--================End Checkout Area =================-->
+{% endblock body %}

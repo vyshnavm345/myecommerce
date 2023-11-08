@@ -1,0 +1,100 @@
+{% extends 'shopbase.html' %}
+{% load static %}
+
+{% block head %}
+
+{% endblock head %}
+
+{% block body %}
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb" style="height: 233px;">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+            <div class="col-first">
+                <h1>Wishlist</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="category.html">Wishlist</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+<!-- disseparing messages -->
+    {% for message in messages %}
+        <p class="alert alert-{{message.tags}}" >{{message}}</p>
+    {% endfor %}
+    <script>
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 2000)
+    </script>
+<!-- End disseparing messages --> 
+<!--================wishlist Area =================-->
+    <section class="cart_area">
+        <div class="container">
+            <div class="cart_inner">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th></th>
+                                <th></th>
+                                <th scope="col">Price</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {% for item in user_wishlist %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'product_detail' item.product.id %}">
+                                            <div class="media">
+                                                <div class="d-flex">
+                                                   <img src="{{ item.product.image.url }}" alt="" width="85" height="85">
+                                                </div>
+                                                <div class="media-body">
+                                                    <p>{{ item.product.product_name }}</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <h5>${{ item.product.price }}</h5>
+                                    </td>
+                                    <td><a class=" genric-btn danger-border circle arrow" href="{% url 'remove_wishlist_item' item.product.id %}">remove</a></td>
+                                </tr>
+                            {% endfor %}
+
+                            <tr class="out_button_area">
+                                <td>
+
+                                </td>
+                                
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                    <div class="checkout_btn_inner d-flex align-items-center">
+                                        <a class="gray_btn" href="{% url 'home' %}">Continue Shopping</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--================End wishlist Area =================-->
+
+{% endblock body %}

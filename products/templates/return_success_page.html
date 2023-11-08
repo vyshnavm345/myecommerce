@@ -1,0 +1,64 @@
+{% extends 'shopbase.html' %}
+{% load static %}
+
+{% block head %}
+    <!-- <style>
+        .gradient-custom {
+        /* fallback for old browsers */
+        background: #f6d365;
+
+        /* Chrome 10-25, Safari 5.1-6 */
+        background: -webkit-linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
+
+        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1))
+        }
+    </style> -->
+{% endblock head %}
+
+{% block body %}
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb" style="height: 233px;">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+                <div class="col-first">
+                    <h1>Product Return </h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="single-product.html">Success</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+<!-- disseparing messages -->
+{% for message in messages %}
+<p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+setTimeout(() => {
+    $(".alert").alert("close");
+}, 2000)
+</script>
+<!-- End disseparing messages --> 
+    <!--================Checkout Area =================-->
+    <section class="checkout_area section_gap">
+        <div class="container">
+            <h3 class="title_confirmation"> Your order Return request has been received.</h3>
+            
+            <div class="billing_details">
+                
+                <div class="row">
+                    
+                        <div class="col-lg-8">
+                        <h1>Success</h1>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!--================End Checkout Area =================-->
+{% endblock body %}

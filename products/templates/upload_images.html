@@ -1,0 +1,41 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+    
+<div class="container">
+
+    <div class="row justify-content">
+        <div class="col-md-10">
+            <a href="{% url 'product_list' %}" class="btn btn-dark my-3">Go Back</a>
+            <div class="card">
+
+
+                <form method='POST' action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-group m-3">
+                        <label>Product</label>
+                        <h4>{{ product }}</h4>
+                    </div>
+
+
+                    <div class="form-group m-3">
+                        <label>Color</label>
+                        <input name="color" type="text" placeholder="Enter a colour"
+                            class="form-control" required>
+                    </div>
+
+                    <div class="form-group m-3">
+                        <label>Upload images</label>
+                        <input required name="images" type="file" multiple class="form-control-file">
+                    </div>
+                    <button type='submit' class="btn btn-primary m-3">Submit</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

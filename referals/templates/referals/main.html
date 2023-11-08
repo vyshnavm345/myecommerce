@@ -1,0 +1,9 @@
+{% load static %}
+
+{% if request.user.is_authenticated %}
+{{ request.user }}
+{% else %}
+    <a href="">
+        <button class="btn btn-primary"> create an account</button>
+    </a>
+{% endif %}

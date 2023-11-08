@@ -1,0 +1,229 @@
+{% extends 'shopbase.html' %}
+{% load static %}
+
+{% block head %}
+    <style>
+        .gradient-custom {
+        /* fallback for old browsers */
+        background: #f6d365;
+
+        /* Chrome 10-25, Safari 5.1-6 */
+        background: -webkit-linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
+
+        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1))
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb" style="height: 233px;">
+    <div class="container">
+
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+
+          <div class="col-first" >
+            <h1>User Profile</h1>
+            <nav class="d-flex align-items-center">
+                <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                <a href="category.html">User</a>
+            </nav>
+          </div>
+        </div>
+
+    </div>
+</section>
+<!-- End Banner Area -->
+<section style="background-color: #eee;">
+    <div class="container py-5">
+  
+      <div class="row">
+
+        <div class="col-lg-4">
+          <div class="card mb-12">
+            <div class="card-body text-center">
+              <div>
+                {% if user.image %}
+                <img id="user-avatar" src="{{ user.image.url }}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
+                {% else %}
+                    <img id="user-avatar" src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                {% endif %}
+              </div>
+             
+              <h5 class="my-3">{{ user.username }}</h5>
+              <p class="text-muted mb-1">Full Stack Developer</p>
+              <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>
+            </div>
+
+            <div class="col-lg-12">
+              <div class="col-sm-12">
+                <a class="btn btn-primary btn-lg" href="{% url 'customer_profile' request.user.id %}" style="width: inherit; margin-bottom: 10px; background: rgb(222, 44, 4);
+                background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Profile</a>
+              </div>
+              <div class="col-sm-12">
+                <a class="btn btn-primary btn-lg" href="{% url 'orders' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Orders</a>
+              </div>
+              <div class="col-sm-12">
+                <a class="btn btn-primary btn-lg" href="{% url 'customer_adress' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Address</a>
+              </div>
+             
+                <div class="col-sm-12">
+                  <a class="btn btn-primary btn-lg" href="{% url 'view_coupons' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                  background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Cupons</a>
+                </div>
+                <div class="col-sm-12">
+                  <a class="btn btn-primary btn-lg" href="{% url 'password_reset' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                  background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Change Password</a>
+                </div>
+                <div class="col-sm-12">
+                  <a class="btn btn-primary btn-lg" href="{% url 'wallet_view' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                  background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Wallet</a>
+                </div>
+                <div class="col-sm-12">
+                  <a class="btn btn-primary btn-lg" href="{% url 'customer_referals' %}" style="width: inherit; margin-bottom: 10px; background: rgb(213,22,22);
+                  background: linear-gradient(90deg, rgba(213,22,22,1) 0%, rgba(253,149,29,1) 43%, rgba(232,134,58,1) 100%); border-color: #fe6d00;">Referals</a>
+                </div>
+              
+          </div>
+
+          </div>
+        </div>
+        {% if wallet is None %}
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2>Sorry! You dont have a wallet yet!</h2>
+                    <h4>Create a wallet and enjoy special offers.</h4>
+                    <a href="{% url 'new_wallet' %}" class="primary-btn">create wallet</a>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="col-lg-8">
+          <div class="card mb-4">
+          
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Full Name : </p>
+                  </div>
+                  <div class="col-sm-9">
+                    <div name="username">{{ request.user.username }}</div>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                      <p class="mb-0">Available Balance : </p>
+                    </div>
+                    <div class="col-sm-9">
+                        <div name="balance">{{ wallet.balance }}</div>
+                    </div>
+                  </div>
+                  <hr>
+                <form action="{% url 'deposit_wallet' %}" id="paymentform" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                    <div class="col-sm-3">
+                        <p class="mb-0">Add(from Paypal) :</p>
+                    </div>
+                    <div class="col-sm-9">
+                        <!-- <input name="deposit" type="number" id="payment_method" oninput="updateTotal()"> -->
+                        <input name="deposit" type="number" id="payment_method" oninput="updateTotal()" >
+                        <input type="hidden" name="total" id="total" value="0"> 
+                        <!-- <a href="" class="genric-btn primary">Add Balance</a> -->
+                        <div id="paypal-button-container" style=" width: 100px; height: 40px; margin-top: 2px; margin-right: 10px; margin-bottom: 10px;"></div>
+                    </div>  
+                    <!-- <div id="paypal-button-container"></div>        -->
+                    <hr>
+                    </div>
+                </form>
+              </div>
+          </div>
+          {% if transactions%}
+          <div class="order_details_table">
+            <h2>Transaction History</h2>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Transaction</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in transactions %}
+                            <tr>
+                                <td><h4>{{item.timestamp}}</h4></td>
+                                <td><h4>{{ item.transaction_type }}</h4></td>
+                                <td><p>₹{{ item.amount }}</p></td>
+                                <td><h5>₹{{ item.transaction_balance }}</h5></td>
+                            </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <h1>No transactions yet</h1>
+        {% endif %}
+      </div>
+      
+    {% endif %}
+    </div>
+  </section>
+
+
+<!-- Include the PayPal JavaScript SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=ARLPuuWUpLJXh4sc6YVHU2jVm-5aEFfaXqW5HDlvVaLQI5L5UzJEE1SM1ShGwHNwIvbRXRc0JUnW8d7j&currency=USD&disable-funding=credit,card"></script>
+
+<script>
+    var total = 0;  // Define the total variable
+
+    function updateTotal() {
+        total = parseFloat(document.getElementById('payment_method').value); // Update the total when input changes
+      
+        console.log("Updated total:", total);
+        document.getElementById('total').value = total;
+    }
+
+    // Render the PayPal button into #paypal-button-container
+    paypal.Buttons({
+        style: {
+            color:  'blue',
+            shape:  'pill',
+        },
+        // Set up the transaction
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: total // Reference the total variable
+                    }
+                }]
+            });
+        },
+        // Finalize the transaction
+        onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+            // Show a success message to the buyer
+            // submitFormData()
+            var csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]').value;
+            document.getElementById('payment_method').value = 'PayPal';
+            console.log("Total before form submission:", total); 
+            document.getElementById("paymentform").submit();
+            alert('Transaction completed by ' + details.payer.name.given_name + '!');
+        });
+    }
+}).render('#paypal-button-container');
+</script>
+
+
+{% endblock body %}

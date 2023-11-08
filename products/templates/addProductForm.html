@@ -1,0 +1,143 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block head %}
+    <style>
+        body {
+            background-image: url('{% static product %}');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        label {
+            color: rgb(255, 255, 255);
+            font-size: 16px; /* Adjust the font size as needed */
+            font-weight: bold; /* Make the text bold, if desired */
+            margin-bottom: 5px; /* Add some spacing between labels */
+        }
+        .d-inline-flex > div {
+            margin-right: 20px; /* Adjust the margin as needed */
+        }
+        .custom-textarea {
+            height: 150px; /* Adjust the height as needed */
+        }
+        h2 {
+            color: rgb(255, 255, 255); 
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+<div class="container">
+    {% for message in messages %}
+        <p class="alert alert-{{message.tags}}">{{message}}</p>
+    {% endfor %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            
+            <h2 class="mt-4">Add New Product</h2>
+            {% for category in categories %}
+                {% if category.verified %}
+                    <a href="{% url 'add_new_product' category.id %}" class="btn btn-primary">{{category }}</a>
+                {% endif %}
+            {% endfor %}
+
+            <form method="post" enctype="multipart/form-data" >
+                {% csrf_token %}
+                <!-- {{ form.as_p }} -->
+                <!-- <button type="submit" class="btn btn-primary">Add Product</button> -->
+            </form>
+        </div>
+    </div>
+    <div class="col-10" style="padding: 100px; padding-top: 50px;" >
+        <div class="row-cols-8" style="display: contents;">
+            {% if updating %}
+                <form method="post" enctype="multipart/form-data" name="action" value="Add" action="{% url 'add_new_product' product_inst %}">
+            {% else %}
+                <form method="post" enctype="multipart/form-data" name="action" value="Add" action="{% url 'add_new_product' category.id %}">
+            {% endif %}
+                    {% csrf_token %}
+            
+                <div class="mb-3">
+                    <label for="{{ form.product_name.id_for_label }}" class="form-label">Product Name</label>
+                    <input type="text" name="{{ form.product_name.name }}" class="form-control" value="{{ form.product_name.value|default:'' }}" placeholder="Product Name">
+                </div>
+                {% if updating %}
+                <input type="hidden" name="action" value="Update">
+                {% else %}
+                <input type="hidden" name="action" value="Add">
+                {% endif %}
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    <textarea name="{{ form.description.name }}" class="form-control custom-textarea" placeholder="Description">{{ form.description.value|default:'' }}</textarea>
+                </div>
+            
+                <div class="mb-3">
+                    <label for="{{ form.price.id_for_label }}" class="form-label">Price</label>
+                    <input type="number" name="{{ form.price.name }}" class="form-control" value="{{ form.price.value|default:'' }}" placeholder="Price">
+                </div>
+            
+                <div class="mb-3">
+                    <label for="{{ form.stock_quantity.id_for_label }}" class="form-label">Stock Quantity</label>
+                    <input type="number" name="{{ form.stock_quantity.name }}" class="form-control" value="{{ form.stock_quantity.value|default:'' }}" placeholder="Stock Quantity">
+                </div>
+            
+                <div class="mb-3">
+                    <label for="{{ form.color.id_for_label }}" class="form-label">Color</label>
+                    <input type="text" name="{{ form.color.name }}" class="form-control" value="{{ form.color.value|default:'' }}" placeholder="Color">
+                </div>
+                <div class="d-inline-flex">
+                    <div class="mb-3">
+                        {{ form.brand.label_tag }}
+                        {{ form.brand }}
+                    </div>
+                    <br>
+                    <div class="mb-3">
+                        <input type="hidden" name="category" value="{{ category.id }}">
+                        <label class="form-label"> Category : {{ category }}</label>
+                        
+                    </div>
+                </div>
+                
+            
+                <div class="mb-3">
+                    <label class="form-label">Subcategory</label>
+                    {% for subcategory in subcategories %}
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="{{ form.subcategories.name }}" value="{{ subcategory.id }}" id="subcategory_{{ subcategory.id }}">
+                            <label class="form-check-label" for="subcategory_{{ subcategory.id }}">{{ subcategory }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-inline-flex">
+                    <div class="mb-3">
+                        {{ form.image.label_tag }}
+                        {{ form.image }}
+                    </div>
+                
+                    <div class="mb-3">
+                        {{ form.offer.label_tag }}
+                        {{ form.offer }}
+                    </div>
+                </div>
+
+                <!-- inserting the rest of the fields for the inherited models -->
+                {% for field in form %}
+                    {% if field.name not in product_fields %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+    
+{% endblock body %}

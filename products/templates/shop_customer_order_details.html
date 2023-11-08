@@ -1,0 +1,262 @@
+{% extends 'shopbase.html' %}
+{% load static %}
+
+{% block head %}
+   
+{% endblock head %}
+
+{% block body %}
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb" style="height: 233px;">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+				<div class="col-first">
+					<h1>Order Details</h1>
+					<nav class="d-flex align-items-center">
+						<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="category.html">Order Details</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!-- disseparing messages -->
+    {% for message in messages %}
+        <p class="alert alert-{{message.tags}}" >{{message}}</p>
+    {% endfor %}
+    <script>
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 4000)
+    </script>
+<!-- End disseparing messages --> 
+
+    <div class="container px-1 px-md-1 py-2 mx-auto">
+        <div class="card">
+            <div class="row d-flex justify-content-between px-3 top">
+                <div class="d-flex">
+                    <h5>ORDER <span class="text-primary font-weight-bold">#6152</span></h5>
+                </div>
+                <div class="d-flex flex-column text-sm-right">
+                    <p class="mb-0">Expected Arrival <span>01/06/20</span></p>
+                    <p>Grasshoppers <span class="font-weight-bold"><a href="https://www.grasshoppers.lk/customers/action/track/V534HB">V534HB</a></span></p>
+                </div>
+            </div> <!-- Add class 'active' to progress -->
+            {% if completed_steps %}
+            <div class="row d-flex justify-content-center">
+                <div class="col-12">
+                    <ul id="progressbar" class="text-center">
+                        {% for i in completed_steps %}
+                        <li class="active step0"></li>
+                        {% endfor %}
+                        {% for i in pending_steps %}
+                        <li class="step0"></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="row justify-content-between top">
+                <div class="row d-flex icon-content"> <img class="icon" src="https://i.imgur.com/9nnc9Et.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>Processed</p>
+                    </div>
+                </div>
+                <div class="row d-flex icon-content"> <img class="icon" src="https://i.imgur.com/GiWFtVu.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>Designing</p>
+                    </div>
+                </div>
+                <div class="row d-flex icon-content"> <img class="icon" src="https://i.imgur.com/u1AzR7w.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>Shipped</p>
+                    </div>
+                </div>
+                <div class="row d-flex icon-content"> <img class="icon" src="https://i.imgur.com/TkPm63y.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>En Route</p>
+                    </div>
+                </div>
+                <div class="row d-flex icon-content"> <img class="icon" src="https://i.imgur.com/HdsziHP.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>Arrived</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <h1 style="color: red; display: flex; justify-content: center; padding-bottom: 55px;">!!! Order Cancelled !!!</h1>
+            {% endif %}
+        </div>
+        {% if completed_steps %}
+        {%  if  pending_steps %}
+        <div class="container px-1 px-md-1 py-2 mx-auto" style="display: flex;
+        justify-content: space-between; height: 60px;">
+            <a class="genric-btn danger radius" data-bs-toggle="modal" data-bs-target="#exampleModalCenter{{ order.id }}" >CANCEL</a>
+
+            <h4><a href=""> Track Courier </a><p> Tracking ID : {{ order.tracking_id }}</p></h4>
+            
+        </div>
+		{% endif %}
+        {% endif %}
+    </div>
+    
+    <section class="order_details section_gap" style="margin-top: -90px;">
+		<div class="container">
+
+			<div class="row order_d_inner" >
+				<div class="col-lg-4">
+					<div class="details_item">
+						<h4>Order Info</h4>
+						<ul class="list">
+							<li><a href="#"><span>Order number</span> :{{ order.id }}</a></li>
+							<li><a href="#"><span>Date</span> : {{ order.order_date }}</a></li>
+							<li><a href="#"><span>Total</span> : INR {{ order.total_amount }}</a></li>
+							<li><a href="#"><span>Payment method</span> : {{ order.payment_method }}</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="details_item">
+						<h4>Billing Address</h4>
+						<ul class="list">
+							<li><a href="#"><span>Street</span> :{{ order.billing_address.street_address }}</a></li>
+							<li><a href="#"><span>City</span> : {{ order.billing_address.city }}</a></li>
+							<li><a href="#"><span>Country</span> : {{ order.billing_address.country }}</a></li>
+							<li><a href="#"><span>Postcode </span> : {{ order.billing_address.postal_code }}</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="details_item">
+						<h4>Shipping Address</h4>
+						<ul class="list">
+							<li><a href="#"><span>Street</span> : {{ order.shipping_address.street_address }}</a></li>
+							<li><a href="#"><span>City</span> : {{ order.shipping_address.city }}</a></li>
+							<li><a href="#"><span>Country</span> : {{ order.shipping_address.country }}</a></li>
+							<li><a href="#"><span>Postcode </span> : {{ order.shipping_address.postal_code }}</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="order_details_table">
+				<h2>Order Details</h2>
+				<a href="{% url 'admin_order_pdf' order.id %}">Download PDF</a>
+				<div class="table-responsive">
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">Product</th>
+								<th scope="col">Quantity</th>
+								<th scope="col">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for item in created_order_items %}
+							<tr>
+								<td>
+                                    <a href="{% url 'product_detail' item.product.id %}"><p>{{ item.product.product_name }} {% if item.is_returned %} <strong style="color: red;"> Item Returned</strong>{% endif %}</p></a>
+									{% if item.is_returned %}
+									<a href="{% url 'product_return_status' item.id %}">Check Return Status</a>
+									{% else %}
+									{% if delivered %}
+										<div class="container px-1 px-md-1 py-2 mx-auto" style="display: flex;
+										justify-content: space-between; height: 53px;">
+											<a class="genric-btn danger radius btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModalCenter{{ item.id }}" >Return</a>
+										</div>
+									{% endif %}
+									{% endif %}
+
+								</td>
+								<td>
+									<h5>x {{ item.quantity }}</h5>
+								</td>
+								<td>
+									<p>${{ item.selling_price}}</p>
+								</td>
+							</tr>
+							{% endfor %}
+							
+							<tr>
+								<td>
+									<h4>Subtotal</h4>
+								</td>
+								<td>
+									<h5></h5>
+								</td>
+								<td>
+									<p>${{ order_total }}</p>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h4>Shipping</h4>
+								</td>
+								<td>
+									<h5></h5>
+								</td>
+								<td>
+									<p>Flat rate: $250.00</p>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h4>Total</h4>
+								</td>
+								<td>
+									<h5></h5>
+								</td>
+								<td>
+									<p>${{ order.total_amount }}</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+
+    <!-- delete_conformation -->
+{%  if  pending_steps %}
+    <div class="modal fade" id="exampleModalCenter{{ order.id }}" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="exampleModalCenterTitle">Cancel Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+            </div>
+            <div class="modal-body"> 
+                <p>Are you sure want to Cancel the Order ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'cancel_order' order.id %}" type="button" class="btn btn-outline-danger">Proceed</a>
+            </div>
+            </div>
+        </div>
+    </div>
+	{% endif %}
+	{% if delivered %}
+	{% for item in created_order_items %}
+	<div class="modal fade" id="exampleModalCenter{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="exampleModalCenterTitle">Cancel Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+            </div>
+            <div class="modal-body"> 
+                <p>Are you sure want to Return this Order ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'return_order' item.id %}" type="button" class="btn btn-outline-danger">Return</a>
+            </div>
+            </div>
+        </div>
+    </div>
+	{% endfor %}
+	{% endif %}
+{% endblock body %}

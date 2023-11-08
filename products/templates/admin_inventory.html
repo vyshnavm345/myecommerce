@@ -1,0 +1,71 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+
+
+{% for message in messages %}
+    <p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+    setTimeout(() => {
+        $(".alert").alert("close");
+    }, 3000)
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mt-4">Inventory</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Stock Quantity</th>
+                        <th>Price</th>
+                        <th>Brand</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <form method="post" action="{% url 'add_product_stock' product.id %}">
+                        {% csrf_token %}
+                            <td>{{ product.id }}</td>
+                            <td>
+                                <img src="{{ product.image.url }}" alt="{{ product.product_name }}" width="80">
+                            </td>
+                            <td>{{ product.product_name }}</td>
+                            <td>{{ product.stock_quantity }}</td>
+                            <td>${{ product.price }}</td>
+                            <td>{{ product.brand }}</td>
+                            
+                            <td><input type="number" name="quantity" placeholder="Quantity"></td>
+                            <td><button type="submit" class="btn  btn-primary">Add Stock</button></td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if products.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">&laquo; Previous</a></li>
+                    {% endif %}
+                    
+                    {% for i in products.paginator.page_range %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

@@ -1,0 +1,167 @@
+
+
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+<main>
+    
+    <div class="container-fluid px-4" >
+        <br><br>
+        <div style="display: flex;">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.start_month.label_tag }} <div class="btn btn-secondary" >{{ form.start_month }}</div>
+                {{ form.end_month.label_tag }} <div class="btn btn-secondary">{{ form.end_month }}</div>
+                <button type="submit" class="btn btn-primary">Get Data</button>
+            </form>
+    </div>
+        <h3>Sales Report</h3><br>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                DataTable Example
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Sales per Day</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Sales per Day</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for item in daily_sales_data %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{item.order_date_day}}</td>
+                            <td>{{item.sales_count}}</td>
+                            <td>{{item.total_sales|floatformat:2}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-area me-1"></i>
+                        Daily Visitors
+                    </div>
+                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="40">r</canvas></div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-1"></i>
+                        Monthly Sales
+                    </div>
+                    <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                </div>
+            </div>
+        <div>
+            {% for data in daily_sales_data %}
+                <tr>
+                    <td>{{ data.order_date_day|date:"Y-m-d" }}</td>
+                    <td>${{ data.total_sales|floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctxx = document.getElementById('myAreaChart');
+  const ctxy = document.getElementById('myBarChart');
+  var months = {{formatted_months|safe}}
+  var monthly_sales = {{total_monthly_sales|safe}}
+  var dates = {{ dates|safe }};
+  var total_amounts = {{ total_amounts|safe}}
+
+  new Chart(ctxx, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [{
+        label: 'Daily sales',
+        data: total_amounts,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  new Chart(ctxy, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Total sales per month',
+        data: monthly_sales,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+<script>
+    // Get the select elements
+    var dayDropdown = document.getElementById("dayDropdown");
+    var monthDropdown = document.getElementById("monthDropdown");
+    var yearDropdown = document.getElementById("yearDropdown");
+
+    // Generate options for days (1-31)
+    for (var i = 1; i <= 31; i++) {
+        var option = document.createElement("option");
+        option.text = i;
+        option.value = i;
+        dayDropdown.appendChild(option);
+    }
+
+    // Generate options for months (January-December)
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    for (var i = 0; i < months.length; i++) {
+        var option = document.createElement("option");
+        option.text = months[i];
+        option.value = i + 1; // Month numbers are 1-based
+        monthDropdown.appendChild(option);
+    }
+
+    // Generate options for years (e.g., from 1900 to the current year)
+    var currentYear = new Date().getFullYear();
+    for (var year = 2020; year <= currentYear; year++) {
+        var option = document.createElement("option");
+        option.text = year;
+        option.value = year;
+        yearDropdown.appendChild(option);
+    }
+</script>
+</main>
+{% endblock body %}

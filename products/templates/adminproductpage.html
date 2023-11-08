@@ -1,0 +1,42 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <a href="{% url 'product_list' %}" class="btn btn-dark my-10">Go Back</a>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Product Details</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for field_name, field_value in product_fields.items %}
+                            <div class="mb-3">
+                                <label for="{{ field_name }}" class="form-label">{{ field_name|capfirst }}</label>
+                                {% if field_name == "image" %}
+                                 <h4>Main</h4>
+                                 <img src="{{ field_value.url }}" alt="Product Image" class="img-thumbnail" style="width: 30%; height: auto;">
+                                 <div class="row mt-4">
+                                    <h4>Related Images</h4>
+                                    {% for image in related_images %}
+                                        <div class="col-md-3 mb-3">
+                                            <img src="{{ image.image.url }}" alt="Related Image" class="img-thumbnail">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                    <h4 class="form-control">{{ field_value }}</h4>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

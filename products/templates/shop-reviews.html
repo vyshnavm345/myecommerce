@@ -1,0 +1,141 @@
+
+
+{% load static %}
+<style>
+	.product-specs {
+	font-family: Arial, sans-serif;
+	color: #888; /* Adjust the shade of gray */
+  }
+</style>
+
+{% block head %}
+{% endblock head %}
+	<!--================Product Description Area =================-->
+	<section class="product_description_area">
+		<div class="container">
+			<ul class="nav nav-tabs" id="myTab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Description</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+					 aria-selected="false">Specification</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review"
+					 aria-selected="false">Reviews</a>
+				</li>
+			</ul>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+					<p>{{ product.description }}</p>
+				</div>
+				<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+					<div class="table-responsive">
+						<table class="table">
+							<tbody>
+								<pre class="product-specs" >{{ product.specification|linebreaksbr|safe }}</pre>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+
+				<!-- comment ends -->
+				<div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="row total_rate">
+								<div class="col-6">
+									<div class="box_total">
+										<h5>Overall</h5>
+										<h4>4.0</h4>
+										<h6>(03 Reviews)</h6>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="rating_list">
+										<h3>Based on 3 Reviews</h3>
+										<ul class="list">
+											<li><a href="#">5 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">4 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">3 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">2 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+											<li><a href="#">1 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
+													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="review_list">
+								{% for review in reviews %}
+								<div class="review_item">
+									<div class="media">
+										<div class="d-flex">
+											{% if review.user.image %}
+												<img src="{{ review.user.image.url }}" alt="" class="rounded-circle img-fluid" style="width: 70px; height: 70px;">
+											{% else %}
+												<img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="" class="rounded-circle img-fluid" style="width: 70px;">
+											{% endif %}
+										</div>
+										<div class="media-body">
+											<h4>{{ review.user.username }}</h4>
+											
+											{% if review.rating == 1 %}
+												<i class="fa fa-star"></i>
+											{% elif review.rating == 2 %}
+												<i class="fa fa-star"></i><i class="fa fa-star"></i>
+											{% elif review.rating == 3 %}
+												<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+											{% elif review.rating == 4 %}
+												<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+											{% elif review.rating == 5 %}
+												<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+											{% endif %}
+										</div>
+									</div>
+									<p>{{ review.review_text }}</p>
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+						{% if request.user.is_authenticated %}
+						<div class="col-lg-6">
+							<div class="review_box">
+								<h4>Add a Review</h4>
+								<form class="row contact_form" action="{% url 'add_review' product.id %}" method="post" id="contactForm" novalidate="novalidate">
+									{% csrf_token %}
+									<div class="col-md-12">
+										<div class="form-group">
+											<textarea class="form-control" name="message" id="message" rows="1" placeholder="Review" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Review'"></textarea>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="rating">Your Rating:</label>
+											<select name="rating" id="rating" class="form-control">
+												<option value="1">⭐</option>
+												<option value="2">⭐⭐</option>
+												<option value="3">⭐⭐⭐</option>
+												<option value="4">⭐⭐⭐⭐</option>
+												<option value="5">⭐⭐⭐⭐⭐</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-md-12 text-right">
+										<button id="review_submit" type="submit" value="submit" class="primary-btn">Submit Now</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--================End Product Description Area =================-->

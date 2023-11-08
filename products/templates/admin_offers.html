@@ -1,0 +1,86 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+
+
+{% for message in messages %}
+    <p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+    setTimeout(() => {
+        $(".alert").alert("close");
+    }, 3000)
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mt-4">Offers</h2>
+            <div class="card" style="width: 500px; background-color: rgb(231, 231, 213); padding: 25px">
+                <form action="{% url 'add_admin_offers' %}" method="post">
+                    {% csrf_token %}
+                    <div>{{form.offer_name.label}}:</div>
+                    <div> {{ form.offer_name}}</div>
+                    <div>{{form.discount_percentage.label}}:</div>
+                    <div>{{ form.discount_percentage}}</div>
+                    <div>{{form.description.label}}:</div>
+                    <div>{{ form.description}}</div>
+                    <button type="submit" class="btn btn-success btn-sm" style="margin: 5px; width: 100px;">Add Offer</button>
+                </form>
+             
+            </div>
+            
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Offer Name</th>
+                        <th>Description</th>
+                        <th>Discount(%)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offer in offers %}
+                    <tr>
+                        <form method="post" action="{% url 'admin_offers' offer.id %}">
+                        {% csrf_token %}
+                            <td>{{ offer.id }}</td>
+                            <td>{{ offer.offer_name }}</td>
+                            <td>{{ offer.description }}</td>
+                            <td>{{ offer.discount_percentage }}%</td>
+                            <td>{{ offer.is_active }}</td>
+                            
+                            {% if offer.is_active %}
+                            <td><button type="submit" class="btn  btn-primary btn-sm" >Deactivate</button></td>
+                            {% else %}
+                            <td><button type="submit" class="btn  btn-primary btn-sm">Activate</button></td>
+                            {% endif %}
+                            <td><a href="{% url 'delete_offer' offer.id %}" type="submit" class="btn  btn-danger btn-sm">Delete</a></td>
+
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if products.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">&laquo; Previous</a></li>
+                    {% endif %}
+                    
+                    {% for i in products.paginator.page_range %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

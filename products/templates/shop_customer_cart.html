@@ -1,0 +1,139 @@
+{% extends 'shopbase.html' %}
+{% load static %}
+
+{% block head %}
+
+{% endblock head %}
+
+{% block body %}
+
+    
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb" style="height: 233px;">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+                <div class="col-first">
+                    <h1>Shopping Cart</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="category.html">Cart</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+
+<!-- disseparing messages -->
+{% for message in messages %}
+<p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+setTimeout(() => {
+    $(".alert").alert("close");
+}, 3000)
+</script>
+<!-- End disseparing messages --> 
+
+    <!--================Cart Area =================-->
+    <section class="cart_area">
+        <div class="container">
+            <div class="cart_inner">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Price</th>
+                                <th scope="col" style="text-align: center;">Quantity</th>
+                               
+                                <th scope="col">Remove Item</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'product_detail' item.product.id %}">
+                                            <div class="media">
+                                                <div class="d-flex">
+                                                    <img src="{{ item.product.image.url }}" alt="" width="85" height="85">
+                                                </div>
+                                                <div class="media-body">
+                                                    <p>{{ item.product.product_name }}</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <h5 id="per-price{{ item.product.id }}">${{ item.discount_price }}</h5>
+                                    </td>
+                                    <td>
+                                        <div class="product_count" style="text-align: center;">
+                                            <label for="quantity" ></label>
+                                            <a class="minus-cart btn" pid="{{item.product.id}}">-<i class="fas fa-minus-square fa-lg"></i></a>
+                                            <span id="quantity">{{ item.quantity }}</span>
+                                            <a class="plus-cart btn" pid="{{item.product.id}}">+<i class="fas fa-plus-square fa-lg"></i></a>
+                                        </div>
+                                    </td>
+                                    
+                                    <td><a class="genric-btn danger small remove-cart"
+                                            href=" " style="border-radius: 25%;" pid="{{item.product.id}}">remove
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                            <h1>No items in cart</h1>
+                            {% endfor %}
+
+
+                           {% if cart %}
+                            <tr id="subtotal-row">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <h5>Subtotal</h5>
+                                </td>
+                                <td>
+                                    <h5 id="subtotal-amount"><span id="amount">{{amount}}</span></h5>
+                                </td>
+                            </tr>
+                            
+                            <tr class="out_button_area">
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                    <div class="checkout_btn_inner d-flex align-items-center">
+                                        <a class="gray_btn" href="{% url 'home' %}">Continue Shopping</a>
+
+                                        <form method="POST" action="{% url 'checkout' %}">
+                                            {% csrf_token %}
+                                            {% for item in cart %}
+                                                <input type="hidden" name="product_{{ item.product.id }}_quantity" id="quantity{{ item.product.id }}" value="1">
+                                            {% endfor %}
+                                            <button type="submit" class="primary-btn">Proceed to checkout</button>
+                                        </form>
+
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--================End Cart Area =================-->
+
+
+{% endblock body %}

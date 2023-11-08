@@ -1,0 +1,361 @@
+{% extends 'shopbase.html' %}
+{% load custom_filters %}
+{% load static %}
+
+{% block head %}
+    <style>
+		.product-image-container {
+			display: flex;
+			justify-content: center; /* Center horizontally */
+			align-items: center; /* Center vertically */
+			height: 200px; /* Adjust the height to your preference */
+		}
+
+		.centered-image {
+			max-width: 100%;
+			max-height: 100%;
+		}
+        .banner{
+            align-items: end;
+            display: flex;
+            justify-content: end;
+            flex-direction: column;
+        }
+	</style>
+{% endblock head %}
+
+{% block body %}
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb" style="height: 233px;">
+    <div class="container">
+
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+          <div class="col-first" >
+            <h1>User Profile</h1>
+            <nav class="d-flex align-items-center">
+                <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                <a href="category.html">User</a>
+            </nav>
+          </div>
+        </div>
+
+    </div>
+</section>
+<!-- End Banner Area -->
+
+
+
+<div class="container">
+    <div>
+        {% if category_offer %}
+            {% for category in category_offer %}
+                <div style="background-image: url({{category.banner.url}}); aspect-ratio: 69/7; margin-bottom: 1px;">
+                    <h1 style="    color: #e78b09;
+                    align-items: center;
+                    display: flex; padding: 20px;">{{ category.offer_name|upper }}</h1>
+                    <div style="align-items: end;
+                    display: flex;
+                    justify-content: end;
+                    flex-direction: column; padding: 20px;">
+                        <h2 style=" color: white;">{{ category.description }}</h2>
+                        <h3 style=" color: white;">Avail extra <strong>{{ category.discount_percentage }}%</strong> Discount</h3>
+                    </div>
+                    
+                </div>
+            {% endfor %}
+        {% else %}
+            <div>
+                <h1>There are no extra offer for this category</h1>
+            </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-xl-3 col-lg-4 col-md-5">
+            <div class="sidebar-categories">
+                <div class="head">Browse Categories</div>
+                <ul class="main-categories">
+                <form action="{% url 'select_category' %}" method="post">
+                    {% csrf_token %}
+                {% for cat_item in cat_data %}
+                    <li class="main-nav-list">
+                        <a data-toggle="collapse" href="#{{ cat_item.category.category_name }}" aria-expanded="false" aria-controls="{{ cat_item.category.category_name }}">
+                            <span class="lnr lnr-arrow-right"></span>{{ cat_item.category.category_name }}<span class="number">{{ cat_item.subcategories|length }}</span>
+                        </a>
+                        <ul class="collapse" id="{{ cat_item.category.category_name }}" data-toggle="collapse" aria-expanded="false" aria-controls="{{ cat_item.category.category_name }}">
+                            {% for subcategory in cat_item.subcategories %}
+                                <li class="main-nav-list child">
+                                    <a class="number"><button  style="border: none;
+                                        background: none;
+                                        padding: 0;
+                                        margin: 0;
+                                        cursor: pointer;
+                                        outline: none;" type="submit" name="choice" value="{{ subcategory }}">{{ subcategory.name }}</button></a>
+                                    <!-- <a style="cursor: pointer;" class="number" type="submit" name="choice" value="{{ subcategory }}">{{ subcategory.name }}</a> -->
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+                </form>
+                </ul>
+            </div>
+            <div class="sidebar-filter mt-50">
+                <form id="product-filter-form" action="/update_product_filter/" method="post">
+                    {% csrf_token %}
+                    <div class="top-filter-head">Product Filters</div>
+                    <div class="common-filter">
+                        <div class="head">Brands</div>
+                            <ul>
+                                {% for brand in brands %}
+                                <li class="brand-checkbox">
+                                    <input class="pixel-radio" type="radio" 
+                                    name="brand" value="{{ brand.brand_name }}"><label for="{{ brand.brand_name }}">{{ brand.brand_name }}<span>(29)</span></label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                    </div>
+                    <div class="common-filter">
+                        <div class="head">Color</div>
+                            <ul>
+                                {% for color in colors %}
+                                <li class="color-checkbox">
+                                    <input class="pixel-radio" type="radio" name="color" value="{{ color }}">
+                                    <label for="{{ color }}">{{ color }}<span>(29)</span></label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                    </div>
+                    <div class="common-filter">
+                        <div class="head">Price</div>
+                        <div class="price-range-area">
+                            <div id="price-range"></div>
+                            <div class="value-wrapper d-flex">
+                                <div class="price">Price:</div>
+                                <span>$</span>
+                                <div id="lower-value"></div>
+                                <div class="to">to</div>
+                                <span>$</span>
+                                <div id="upper-value"></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-xl-9 col-lg-8 col-md-7">
+            <!-- Start Filter Bar -->
+            <div class="filter-bar d-flex flex-wrap align-items-center">
+                <div class="sorting">
+                    <select>
+                        <option value="1">Default sorting</option>
+                        <option value="1">Default sorting</option>
+                        <option value="1">Default sorting</option>
+                    </select>
+                </div>
+                <div class="sorting mr-auto">
+                    <select>
+                        <option value="1">Show 12</option>
+                        <option value="1">Show 12</option>
+                        <option value="1">Show 12</option>
+                    </select>
+                </div>
+                <div>
+                    <form action="{% url 'product_category' %}" method="get">
+                        <div class="form-outline" style="display: flex;
+                    margin-right: 50px; margin-top: 7px;">
+                        <input type="search" id="form1" class="form-control" placeholder="Search..."  name="q" value="{{search_query}}"/>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                          </button>
+                      </div>
+                    </form>
+                    
+                      
+                </div>
+                    
+                <div class="pagination">
+                    {% include 'pagination.html' %}
+                    <!-- <a href="#" class="prev-arrow"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
+                    <a href="#" class="active">1</a>
+                    <a href="#">2</a>
+                    <a href="#">3</a>
+                    <a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
+                    <a href="#">6</a>
+                    <a href="#" class="next-arrow"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a> -->
+                </div>
+            </div>
+            <!-- End Filter Bar -->
+            <!-- Start Best Seller -->
+            <section id="filtered-products-container" class="lattest-product-area pb-40 category-list">
+                <div class="row">
+                    {% for product in products %}
+                    <!-- single product -->
+                    <div class="col-lg-4 col-md-6">
+                        <a href="{% url 'product_detail' product.id %}">
+                            <div class="single-product">
+                                <img class="img-fluid" src="{{ product.image.url }}" alt="">
+                                <div class="product-details">
+                                    
+                                        <h6>{{ product.product_name }}</h6>
+                                        <div class="price">
+                                            {% if product.offer.is_active == True %}
+                                            <h6>₹{{ product.price|offer_price:product.offer.discount_percentage }}</h6>
+                                            <h6 class="l-through">₹{{ product.price }}</h6>
+                                            {% else %}
+                                            <h6>₹{{product.price}}</h6>
+                                            {% endif %}
+                                        </div>
+                                    
+                                    <div class="prd-bottom">
+                                        <form action="" method="post">
+                                            <a href="{% url 'add_to_cart' product.id %}" class="social-info" type="submit">
+                                                <span class="ti-bag"></span>
+                                                <p class="hover-text">Cart</p>
+                                            </a>
+                                            <a href="{% url 'add_to_wishlist' product.id %}" class="social-info" type="submit">
+                                                <span class="lnr lnr-heart"></span>
+                                                <p class="hover-text">Wishlist</p>
+                                            </a>
+                                            <!-- <a href="" class="social-info">
+                                                <span class="lnr lnr-sync"></span>
+                                                <p class="hover-text">compare</p>
+                                            </a> -->
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-move"></span>
+                                                <p class="hover-text">view more</p>
+                                            </a>
+                                        </form>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            <!-- End Best Seller -->
+            <!-- Start Filter Bar -->
+            <!-- <div class="filter-bar d-flex flex-wrap align-items-center">
+                <div class="sorting mr-auto">
+                    <select>
+                        <option value="1">Show 12</option>
+                        <option value="1">Show 12</option>
+                        <option value="1">Show 12</option>
+                    </select>
+                </div>
+                <div class="pagination">
+                    {% include 'pagination.html' %} -->
+
+                    <!-- {% if products.has_previous %}
+                    <a href="?page={{ computers.previous_page_number }}" class="prev-arrow" style="width: 100px;"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
+                    {% endif %}
+                    <a href="#" class="active">1</a>
+                    {% for i in products.paginator.page_range %}
+                        <a href="?page={{ i }}">{{ i }}</a>
+                    {% endfor %} -->
+                    <!-- <a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
+                    <a href="#">6</a> -->
+                    <!-- {% if products.has_next %}
+                    <a href="#" class="next-arrow"><i class="fa fa-long-arrow-right" aria-hidden="true" style="width: 100px;"></i></a>
+                    {% endif %} -->
+
+                    <!-- <ul class="pagination">
+                        {% if products.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ computers.previous_page_number }}" style="width: 100px;">&laquo; Previous</a></li>
+                        {% endif %}
+                        
+                        {% for i in products.paginator.page_range %}
+                        <a href="?page={{ i }}">{{ i }}</a>
+                        {% endfor %}
+                        
+                        {% if products.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ computers.next_page_number }}" style="width: 100px;">Next &raquo;</a></li>
+                        {% endif %}
+                    </ul> -->
+                </div>
+            </div>
+            <!-- End Filter Bar -->
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Quick Product View -->
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="container relative">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="product-quick-view">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="quick-view-carousel">
+                            <div class="item" style="background: url(img/organic-food/q1.jpg);">
+
+                            </div>
+                            <div class="item" style="background: url(img/organic-food/q1.jpg);">
+
+                            </div>
+                            <div class="item" style="background: url(img/organic-food/q1.jpg);">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="quick-view-content">
+                            <div class="top">
+                                <h3 class="head">Mill Oil 1000W Heater, White</h3>
+                                <div class="price d-flex align-items-center"><span class="lnr lnr-tag"></span> <span class="ml-10">$149.99</span></div>
+                                <div class="category">Category: <span>Household</span></div>
+                                <div class="available">Availibility: <span>In Stock</span></div>
+                            </div>
+                            <div class="middle">
+                                <p class="content">Mill Oil is an innovative oil filled radiator with the most modern technology. If you are
+                                    looking for something that can make your interior look awesome, and at the same time give you the pleasant
+                                    warm feeling during the winter.</p>
+                                <a href="#" class="view-full">View full Details <span class="lnr lnr-arrow-right"></span></a>
+                            </div>
+                            <div class="bottom">
+                                <div class="color-picker d-flex align-items-center">Color:
+                                    <span class="single-pick"></span>
+                                    <span class="single-pick"></span>
+                                    <span class="single-pick"></span>
+                                    <span class="single-pick"></span>
+                                    <span class="single-pick"></span>
+                                </div>
+                                <div class="quantity-container d-flex align-items-center mt-15">
+                                    Quantity:
+                                    <input type="text" class="quantity-amount ml-15" value="1" />
+                                    <div class="arrow-btn d-inline-flex flex-column">
+                                        <button class="increase arrow" type="button" title="Increase Quantity"><span class="lnr lnr-chevron-up"></span></button>
+                                        <button class="decrease arrow" type="button" title="Decrease Quantity"><span class="lnr lnr-chevron-down"></span></button>
+                                    </div>
+
+                                </div>
+                                <div class="d-flex mt-20">
+                                    <a href="#" class="view-btn color-2"><span>Add to Cart</span></a>
+                                    <a href="#" class="like-btn"><span class="lnr lnr-layers"></span></a>
+                                    <a href="#" class="like-btn"><span class="lnr lnr-heart"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+ -->
+
+	
+
+	{% include 'shop_featured_above_footer.html' %}
+
+{% endblock body %}

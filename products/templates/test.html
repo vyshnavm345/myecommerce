@@ -1,0 +1,97 @@
+<form id="product-filter-form" action="/update_product_filter/" method="POST">
+    {% csrf_token %}
+    <div class="top-filter-head">Product Filters</div>
+    <div class="common-filter">
+        <div class="head">Brands</div>
+        <ul>
+            {% for brand in brands %}
+            <li class="brand-checkbox">
+                <input class="pixel-radio" type="radio" name="brand" value="{{ brand.brand_name }}">
+                <label for="{{ brand.brand_name }}">{{ brand.brand_name }}<span>(29)</span></label>
+            </li>
+            {% endfor }
+        </ul>
+    </div>
+    <div class="common-filter">
+        <div class="head">Color</div>
+        <ul>
+            {% for color in colors %}
+            <li class="color-checkbox">
+                <input class="pixel-radio" type="radio" name="color" value="{{ color }}">
+                <label for="{{ color }}">{{ color }}<span>(29)</span></label>
+            </li>
+            {% endfor }
+        </ul>
+    </div>
+    <div class="common-filter">
+        <div class="head">Price</div>
+        <div class="price-range-area">
+            <div id="price-range"></div>
+            <div class="value-wrapper d-flex">
+                <div class="price">Price:</div>
+                <span>$</span>
+                <div id="lower-value"></div>
+                <div class="to">to</div>
+                <span>$</span>
+                <div id="upper-value"></div>
+            </div>
+        </div>
+    </div>
+    <input type="submit" value="Apply Filters">
+</form>
+
+<!-- Include jQuery and noUiSlider scripts here -->
+
+<script>
+    $(document).ready(function () {
+        var csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]').value;
+
+        $('.brand-checkbox, .color-checkbox').on('change', function () {
+            updateFormValues();
+        });
+
+        if (document.getElementById("price-range")) {
+            var nonLinearSlider = document.getElementById('price-range');
+            noUiSlider.create(nonLinearSlider, {
+                connect: true,
+                behaviour: 'tap',
+                start: [500, 4000],
+                range: {
+                    'min': [0],
+                    '10%': [5000, 500],
+                    '50%': [40000, 1000],
+                    'max': [100000],
+                },
+            });
+
+            var nodes = [
+                document.getElementById('lower-value'),
+                document.getElementById('upper-value'),
+            ];
+
+            nonLinearSlider.noUiSlider.on('update', function (values, handle, unencoded, isTap, positions) {
+                nodes[handle].innerHTML = values[handle];
+            });
+        }
+
+        function updateFormValues() {
+            var selectedBrands = getSelectedValues("brand");
+            var selectedColors = getSelectedValues("color");
+
+            // Do something with the selected brand and color values
+            console.log("Selected Brands: " + selectedBrands);
+            console.log("Selected Colors: " + selectedColors);
+
+            // You can use these values to update the product filter or perform other actions.
+        }
+
+        function getSelectedValues(name) {
+            var selectedValues = [];
+            $("input[name='" + name + "']:checked").each(function () {
+                selectedValues.push($(this).val());
+            });
+            return selectedValues;
+        }
+    });
+</script>
+</body>

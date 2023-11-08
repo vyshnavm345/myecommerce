@@ -1,0 +1,307 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+{% block head %}
+<style>
+    .custom{
+        display: none;
+    }
+</style>
+<script>
+    function showPage(page) {
+        document.querySelectorAll('.custom').forEach(div => {
+            div.style.display = 'none'; 
+        })
+        document.querySelector(`#${page}`).style.display  = 'block';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.topbtn').forEach(button => {
+            console.log("Button found");
+            button.onclick = function() {
+                console.log("Button clicked");
+                showPage(this.dataset.page);
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#order').style.display  = 'block';
+    });
+</script>
+{% endblock head %}
+{% block body %}
+
+
+{% for message in messages %}
+    <p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+    setTimeout(() => {
+        $(".alert").alert("close");
+    }, 3000)
+</script>
+
+<div class="container">
+    
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mt-4">Order List</h2>
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body"><button class="topbtn" data-page="order" style="all: unset">All Orders <strong> ({{ status_counts.All_order_count  }})</strong></button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body"><button class="topbtn" data-page="order1" style="all: unset">Pending Orders <strong> ({{ status_counts.Pending  }})</strong></button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body"><button class="topbtn"data-page="order2" style="all: unset"> Confirmed<strong> ({{ status_counts.Confirmed }})</button></strong></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body"><button class="topbtn"data-page="order3" style="all: unset">Delivered Orders <strong> ({{ status_counts.Delivered }})</strong></button></div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-danger text-white mb-4">
+                        <div class="card-body"><button class="topbtn"data-page="order4" style="all: unset">Cancelled Orders <strong> ({{ status_counts.Cancelled }})</strong></button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="custom" id="order">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Order date</th>
+                            <th>Address</th>
+                            <th>Total amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        {% for order in orders %}
+                        <tr>
+                        <form method="post" action="{% url 'change_order_status' order.id %}">
+                        {% csrf_token %}
+                            <td>{{ order.username }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.shipping_address }}</td>
+                            <td>${{ order.total_amount }}</td>
+                            
+                                <td>
+                                    <div class="col-6">
+                                        
+                                            <select name="status" class="form-select form-select-sm" style="padding: 3px; border: 1px solid #ced4da; border-radius: 0.25rem; width: 140px;">
+                                                <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                                <option value="Confirmed" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
+                                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                    </div>
+                                </td>
+                                <td><button type="submit" class="btn  btn-primary">Update</button></td>
+                            </form>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+            <div class="custom" id="order1">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Order date</th>
+                            <th>Address</th>
+                            <th>Total amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        {% for order in pending_orders %}
+                        <tr>
+                        <form method="post" action="{% url 'change_order_status' order.id %}">
+                        {% csrf_token %}
+                            <td>{{ order.username }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.shipping_address }}</td>
+                            <td>${{ order.total_amount }}</td>
+                            
+                                <td>
+                                    <div class="col-6">
+                                        
+                                            <select name="status" class="form-select form-select-sm" style="padding: 3px; border: 1px solid #ced4da; border-radius: 0.25rem; width: 140px;">
+                                                <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                                <option value="Confirmed" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
+                                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                    </div>
+                                </td>
+                                <td><button type="submit" class="btn  btn-primary">Update</button></td>
+                            </form>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+            <div class="custom" id="order2">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Order date</th>
+                            <th>Address</th>
+                            <th>Total amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        {% for order in confirmed_orders %}
+                        <tr>
+                        <form method="post" action="{% url 'change_order_status' order.id %}">
+                        {% csrf_token %}
+                            <td>{{ order.username }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.shipping_address }}</td>
+                            <td>${{ order.total_amount }}</td>
+                            
+                                <td>
+                                    <div class="col-6">
+                                        
+                                            <select name="status" class="form-select form-select-sm" style="padding: 3px; border: 1px solid #ced4da; border-radius: 0.25rem; width: 140px;">
+                                                <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                                <option value="Confirmed" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
+                                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                    </div>
+                                </td>
+                                <td><button type="submit" class="btn  btn-primary">Update</button></td>
+                            </form>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+            <div class="custom" id="order3">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Order date</th>
+                            <th>Address</th>
+                            <th>Total amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        {% for order in delivered_orders %}
+                        <tr>
+                        <form method="post" action="{% url 'change_order_status' order.id %}">
+                        {% csrf_token %}
+                            <td>{{ order.username }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.shipping_address }}</td>
+                            <td>${{ order.total_amount }}</td>
+                            
+                                <td>
+                                    <div class="col-6">
+                                        
+                                            <select name="status" class="form-select form-select-sm" style="padding: 3px; border: 1px solid #ced4da; border-radius: 0.25rem; width: 140px;">
+                                                <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                                <option value="Confirmed" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
+                                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                    </div>
+                                </td>
+                                <td><button type="submit" class="btn  btn-primary">Update</button></td>
+                            </form>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+            <div class="custom" id="order4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Order date</th>
+                            <th>Address</th>
+                            <th>Total amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        {% for order in cancelled_orders %}
+                        <tr>
+                        <form method="post" action="{% url 'change_order_status' order.id %}">
+                        {% csrf_token %}
+                            <td>{{ order.username }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.shipping_address }}</td>
+                            <td>${{ order.total_amount }}</td>
+                            
+                                <td>
+                                    <div class="col-6">
+                                        
+                                            <select name="status" class="form-select form-select-sm" style="padding: 3px; border: 1px solid #ced4da; border-radius: 0.25rem; width: 140px;">
+                                                <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                                <option value="Confirmed" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
+                                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                    </div>
+                                </td>
+                                <td><button type="submit" class="btn  btn-primary">Update</button></td>
+                            </form>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if orders.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ orders.previous_page_number }}">&laquo; Previous</a></li>
+                    {% endif %}
+                    
+                    {% for i in orders.paginator.page_range %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+                    
+                    {% if orders.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ orders.next_page_number }}">Next &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

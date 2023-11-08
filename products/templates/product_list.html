@@ -1,0 +1,113 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+
+
+<!-- Example single danger button -->
+<div class="container mt-5" style="margin-top: 20px;">
+    <div class="row justify-content-left">
+        <div class="col-md-2">
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a type="Submit" href="{% url 'add_product' %}" class="btn btn-primary btn-sm " >Add Product</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript to handle dropdown item clicks
+    document.querySelectorAll('.dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            var selectedValue = this.getAttribute('data-value');
+            // Redirect to the appropriate view or perform an action with selectedValue
+            // For example, you can use JavaScript to change the window location:
+            window.location.href = '/your-view-url/' + selectedValue;
+        });
+    });
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mt-4">Product List</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        
+                        <th>Actions</th>
+                        <th>Insert</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>
+                            <img src="{{ product.image.url }}" alt="{{ product.product_name }}" width="80">
+                        </td>
+                        <td>{{ product.product_name }}</td>
+                        <td>{{ product.description }}</td>
+                        <td>${{ product.price }}</td>
+                        <td>{{ product.stock_quantity }}</td>
+                        
+                        <td>
+                            <form action="{% url 'add_new_product' product.id %}"  method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="Edit">
+                                <button type="submit" class="btn btn-primary btn-sm" >	&nbsp; Edit	&nbsp;</button>
+                            </form>
+                            
+                            <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModalCenter{{ product.id }}" >Delete</a>
+                        </td>
+                        <td><a class="btn btn-warning btn-sm" href="{% url 'add_images' product.id%}">Add</a></td>
+                        <td><a class="btn btn-info btn-sm" href="{% url 'view_product' product.id %}">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    {% if products.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">&laquo; Previous</a></li>
+                    {% endif %}
+                    
+                    {% for i in products.paginator.page_range %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+        </div>
+    </div>
+</div>
+{% for product in products %}
+        <div class="modal fade" id="exampleModalCenter{{ product.id }}" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="exampleModalCenterTitle">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure want to delete "{{ product.product_name }}" ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'delete_product' product.id %}" type="button" class="btn btn-outline-danger">Delete</a>
+            </div>
+            </div>
+        </div>
+        </div>
+    {% endfor %}
+{% endblock body %}

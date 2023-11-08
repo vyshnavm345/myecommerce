@@ -1,0 +1,229 @@
+{% extends 'shopbase.html' %}
+{% load custom_filters %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/zoom.css' %}">
+<style>
+	.product-thumbnail {
+		width: 50px; /* Adjust the width as needed */
+		height: 50px; /* Adjust the height as needed */
+		margin: 5px 10px; /* Adjust the margin to control spacing between thumbnails */
+		cursor: pointer; /* Add pointer cursor to indicate interactivity */
+		z-index: 1; /* Ensure that the thumbnails are behind the main image */
+}
+
+</style>
+
+{% endblock head %}
+
+{% block body %}
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb"  style="height: 233px;">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+				<div class="col-first">
+					<h1>Product Details Page</h1>
+					<nav class="d-flex align-items-center">
+						<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
+						<a href="single-product.html">product-details</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+
+
+
+
+
+
+	
+<!-- Product Details Section Begin -->
+<section class="product-details spad">
+    <div class="container">
+        <div class="row">
+
+
+
+            <!-- product image section -->
+            <div class="col-lg-6 col-md-6">
+                {% if not images %}
+                    
+					<div class="product__details__pic__item">
+						<div class="product__details__pic__item--large-container" >
+						  <img class="xzoom product__details__pic__item--large" id="xzoom-default" src="{{ product.image.url }}" xoriginal="{{ product.image.url }}" />
+						</div>
+					</div>
+					{% else %}
+					<div class="product__details__pic__item">
+						<div class="product__details__pic__item--large-container">
+							<img class="xzoom product__details__pic__item--large" id="xzoom-default" src="{{ first.image.url }}" xoriginal="{{ images.0.image.url }}" />
+						</div>
+					</div>
+					<div class="product__details__pic__slider owl-carousel">
+						{% for image in images %}
+							<img data-imgbigurl="{{ image.image.url }}" src="{{ image.image.url }}" alt="" class="product-thumbnail">
+						{% endfor %}
+					</div>
+
+					{% endif %}
+            </div>
+
+			
+            <!-- product details section -->
+            <div class="col-lg-6 col-md-6">
+                <div class="s_product_text">
+					<h3>{{ product.product_name }}</h3>
+					{% if product.category.is_deleted %}
+					<h2 >Sorry!!!</h2><h4 style="color: green;">Product Currently Unavailable.</h4>
+					{% else %}
+					<h2><div class="price">
+						{% if product.offer.is_active == True %}
+							Offer Price: ₹{{ product.price|offer_price:product.offer.discount_percentage }}<h6> </h6>
+							<h6>old price: <strike style="color: black; text-decoration: line-through;">₹{{product.price}}</strike></h6>
+							
+							
+						{% else %}
+							₹{{product.price}}
+						{% endif %}
+					</div></h2>
+					
+					<ul class="list">
+						<li><a class="active" href="#"><span>Category</span> : {{ product.category }}</a></li>
+						<li><a href="#"><span>Availability</span> : {% if product.stock_quantity > 0 %} In Stock({{ product.stock_quantity }} pcs) {% else %} Out of stock{% endif %}</a></li>
+					</ul>
+					{% endif %}
+					<p>{{ product.description }}</p>
+						<div class="product_color_buttons">
+							{% if variants %}
+								{% for variant in variants %}
+									<div><button>variant</button></div>
+								{% endfor %}
+							{% endif %}
+							<br>
+							{% for color in colors %}
+								<a href="{% url 'product_detail' product.id  color %}" >
+									<button class="color-button"  style=" height: 30px; width: 30px; border-radius: 50%; margin-right: 10px; cursor: pointer; background-color: {{color}};" ></button>
+								</a>
+							{% endfor %}
+						</div>
+					<div class="product_count">
+						<label for="qty">Quantity:</label>
+						<input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
+						<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+						 class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+						<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
+						 class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
+					</div>
+					<div class="card_area d-flex align-items-center">
+						{% if in_cart %}
+						<a class="primary-btn" href="{% url 'add_to_cart' product.id %}">Go to Cart</a>
+						{% else %}
+						<a class="primary-btn" href="{% url 'add_to_cart' product.id %}">Add to Cart</a>
+						
+						{% endif %}
+						<a class="primary-btn" href="{% url 'add_to_wishlist' product.id %}"><i class="lnr lnr lnr-heart"></i></a>
+					</div>
+				</div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<style>
+    /* CSS to style the product thumbnails as small icons */
+    .product-thumbnail {
+        width: 50px; /* Adjust the width as needed */
+        height: 50px; /* Adjust the height as needed */
+        margin: 5px; /* Adjust the margin as needed to control spacing between thumbnails */
+        cursor: pointer; /* Add pointer cursor to indicate interactivity */
+    }
+    
+    /* CSS to maintain the aspect ratio of the main product image */
+    .product__details__pic__item--large-container {
+        position: relative;
+        padding-bottom: 100%; /* 1:1 Aspect Ratio (square) */
+    }
+    
+    .product__details__pic__item--large {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+
+	{% include 'shop-reviews.html' %}
+
+	<!-- Start related-product Area -->
+	
+	{% include 'shop_featured_above_footer.html' %}
+
+	<!-- End related-product Area -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script src="https://code.jquery.com/jquery-1.11.0.js"></script>
+<script src="https://unpkg.com/xzoom/dist/xzoom.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function() {
+            // Initialize Xzoom
+            var xzoomContainer = $('.xzoom, .xzoom-gallery');
+            xzoomContainer.xzoom({
+                zoomWidth: 800, // Increase this value to make the zoomed image larger
+				zoomHeight: 800,
+                title: true,
+                tint: '#333',
+                Xoffset: 15,
+            });
+
+            // Get references to the main product image and thumbnail images
+            var mainProductImage = $("#xzoom-default");
+            var thumbnailImages = $(".product-thumbnail");
+
+            // Add click event handlers to thumbnail images
+            thumbnailImages.click(function() {
+                // Get the source URL of the clicked thumbnail
+                var imageUrl = $(this).attr("src");
+
+                // Update the main product image with the clicked thumbnail
+                mainProductImage.attr("xoriginal", imageUrl);
+
+                // Reinitialize Xzoom to reflect the changes
+                xzoomContainer.xzoom().reinit();
+            });
+        });
+    })(jQuery);
+</script>
+
+<!--image toggle functionality -->
+	<script>
+	$(document).ready(function() {
+		// Get references to the main product image and thumbnail images
+		var mainProductImage = $(".product__details__pic__item--large");
+		var thumbnailImages = $(".product-thumbnail");
+	
+		// Add click event handlers to thumbnail images
+		thumbnailImages.click(function() {
+			// Get the source URL of the clicked thumbnail
+			var imageUrl = $(this).attr("src");
+	
+			// Update the main product image with the clicked thumbnail
+			mainProductImage.fadeOut(200, function() {
+				mainProductImage.attr("src", imageUrl);
+				mainProductImage.fadeIn(200);
+			});
+		});
+	});
+	</script>
+{% endblock body %}
+

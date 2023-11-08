@@ -1,0 +1,43 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+
+
+<!-- Example single danger button -->
+<div class="container">
+    <div class="row">
+        <div class="card mt-4">
+            <div class="card-body">
+                <h3 class="card-title">Category List</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Category Name</th>
+                            <th>Description</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if categories %}
+                            {% for category in categories %}
+                                <tr>
+                                    <form action="POST"></form>
+                                        <td><a href="{% url 'subCategory' category.id %}">{{ category.category_name }}({{ category.subcategories.count }})</a></td>
+                                        <td>{{ category.description }}</td>
+                                    </form>
+                                        <td><a class="btn btn-info btn-sm" href="{% url 'restoreCategory' category.id %}">Restore</a></td>
+                                    
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+{% endblock body %}

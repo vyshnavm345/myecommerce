@@ -1,0 +1,338 @@
+{% extends 'shopbase.html' %}
+{% load static %}
+
+{% block head %}
+    <!-- <style>
+        .gradient-custom {
+        /* fallback for old browsers */
+        background: #f6d365;
+
+        /* Chrome 10-25, Safari 5.1-6 */
+        background: -webkit-linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
+
+        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1))
+        }
+    </style> -->
+{% endblock head %}
+
+{% block body %}
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb" style="height: 233px;">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end" style="padding: 10px 0 30px 0;">
+                <div class="col-first">
+                    <h1>Checkout</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="single-product.html">Checkout</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+<!-- disseparing messages -->
+{% for message in messages %}
+<p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+setTimeout(() => {
+    $(".alert").alert("close");
+}, 2000)
+</script>
+
+<!-- End disseparing messages --> 
+    <!--================Checkout Area =================-->
+    <section class="checkout_area section_gap">
+        <div class="container">
+            
+            <div class="check_title">
+                <h2>Have a coupon? Enter your code below</h2>
+            </div>
+            <div class="card" style="margin-bottom: 5px; padding: 10px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="width: 348px; margin-left: 10px;">
+                        <input type="text" id="coupon_code_input" style="width: 91%; padding: 5px; margin-bottom: 10px;" placeholder="Enter coupon code">
+                        <div class="err" id="messages-container" style="color: red; font-size: large;"></div>
+                       
+                        <button id="apply_coupon_button" style="display: block; background-color: #ff6c00; color: #fff; padding: 5px 10px; text-align: center; text-decoration: none;">Apply Coupon</button>
+                    </div>
+                </div>
+            </div>
+           
+            
+            <div class="billing_details">
+                
+                <div class="row">
+                    
+                        <div class="col-lg-8">
+                        <form action="{% url 'paymentDone' %}"  method="GET" id="paymentform">
+                            {% csrf_token %}
+                            <h3>Select the Address</h3>
+                            <div style=" white-space: nowrap; display: flex;">
+                                {% for address in addresses %}
+                                <div class="form-check mt-2 mb-5">
+                                    <input class="form-check-input" type="radio" name="custid" id="custadd{{forloop.counter}}" value="{{address.id}}">
+                                    <label class="form-check-label fw-bold" for="custadd{{forloop.counter}}"></label>
+                                </div>
+                                <div class="card" style="overflow: hidden; width: 309px;">
+                                    <div class="card-body" >
+                                    <h5>{{ address.name }}</h5>
+                                    <p>{{ address|linebreaksbr|safe }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                            </div>
+                            <h3>OR</h3>
+                                <h3>Delivery Address</h3>
+                                
+                                <div class="row contact_form"  novalidate="novalidate" name="new_address">
+                                    <div class="col-md-6 form-group p_star">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="name">
+                                    </div>
+                                    <input type="hidden" name="user" value="{{ request.user.id }}">
+                                    <div class="col-md-6 form-group p_star">
+                                        <input type="text" class="form-control" id="last" name="name" placeholder="Last name">
+                                    </div>
+                                    
+                                    <div class="col-md-6 form-group p_star">
+                                        <input type="text" class="form-control" id="number" name="number" placeholder="Phone number">
+                                    </div>
+                                    <div class="col-md-6 form-group p_star">
+                                        <input type="email" class="form-control" id="email" name="compemailany" placeholder="Email Address">
+                                    </div>
+                                    <div class="col-md-12 form-group p_star">
+                                        <input type="text" class="form-control" id="street_address" name="street_address" placeholder="street_address">
+                                    </div>
+                                    
+                                    <div class="col-md-12 form-group p_star">
+                                        <input type="text" class="form-control" id="city" name="city" placeholder="City">
+                                    </div>
+                                    <div class="col-md-6 form-group p_star">
+                                        <input type="text" class="form-control" id="state" name="state" placeholder="State">
+                                    </div>
+                                    <div class="col-md-6 form-group p_star">
+                                        <input type="text" class="form-control" id="country" name="country" placeholder="Country">
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <input type="text" class="form-control" id="postal_code" name="postal_code" placeholder="Postcode/ZIP">
+                                    </div>
+                                    
+                                
+                                </div>
+
+                            </div>
+                            
+                            <div class="col-lg-4">    
+                                <div class="order_box">
+                                   
+                                    <h2>Your Order</h2>
+                                    <ul class="list">
+                                        <li><a href="#">Product <span>Total</span></a></li>
+                                        {% for item in  cart_items %}
+                                        <li>
+                                            <a href="#">{{ item.product.product_name|slice:":12" }}{% if item.product.product_name|length > 12 %}...{% endif %}<span class="middle" style="text-align: center;
+                                        ">x {{ item.quantity }}</span>
+                                         <span class="last">${{ item.total_cost }}</span>
+                                        </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <ul class="list list_2">
+                                        <li><a href="#">Subtotal <span>${{ amount }}</span></a></li>
+                                        <li><a href="#">Shipping <span>Flat rate: $250.00</span></a></li>
+                                        <li><a href="#" >Coupon Discount <span id="discount_value"></span></a></li>
+                                        <li><a href="#" >Offer Discount <span id="offer_discount"></span></a></li>
+
+                                        <li><a href="#" >Total $<span id="total_value">{{ total }}</span></a></li>
+                                    </ul>
+                        
+                                    <div>
+                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" >Available Offers</a>
+                                    </div>
+
+                                    <div class="payment_item">
+                                        <div class="radion_btn">
+                                            <input type="radio" id="f-option5" name="payment_method" value="COD">
+                                            <label for="f-option5">Cash On Delivery</label>
+                                            <div class="check"></div>
+                                        </div>
+                                    </div>
+                                    
+                         <!-- show wallet if the user has wallet or give the option to create wallet -->
+                                    <div class="payment_item">
+                                        <div class="radion_btn">
+                                            <input type="radio" id="f-option6" name="payment_method" value="wallet">
+                                            <label for="f-option6">Pay from Wallet</label>
+                                            <div class="check"></div>
+                                        </div>
+                                    </div>
+                                    <div class="payment_item active">
+                                        <div id="paypal-button-container"></div>
+                                            <!-- <p></p> -->
+                                        </div>
+                                        <div class="creat_account">
+                                            <input type="checkbox" id="f-option4" name="selector">
+                                            <label for="f-option4">I’ve read and accept the </label>
+                                            <a href="#">terms & conditions*</a>
+                                        </div>
+                                            <input type="hidden" id="payment_method" name="payment_method" value="">
+                                            <input type="submit" class="primary-btn" value="Continue">
+                                    </div>
+                            </form> 
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="exampleModalCenterTitle">Offers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+            </div>
+            {% for offer in category_offers %}
+                <div class="modal-body">
+                    <input id="dcategory" value="{{ offer.discount_percentage }}" type="hidden">
+                    <p>{{ offer.offer_name }}, {{ offer.description }} , {{ offer.discount_percentage }}%... </p>
+                    <button  id="categoryOffer" type="button">Use</button>
+                </div>
+            {% endfor %}
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+            </div>
+        </div>
+        </div>
+    
+    <!--================End Checkout Area =================-->
+{% endblock body %}
+{% block payment-gateway %} 
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Attach a click event handler to the "Apply Coupon" button
+    document.querySelector('#apply_coupon_button').addEventListener('click', function() {
+        // Get the coupon code input value
+        var couponCode = document.querySelector('#coupon_code_input').value;
+        console.log('Coupon Code:', couponCode);
+
+        // Make an AJAX request to the view
+        fetch('/validate_coupon/?coupon_code=' + couponCode)
+        .then(response => response.json())
+        .then(data => {
+            // Log the response data
+            console.log('Response Data:', data);
+
+            // Update the HTML elements with the discount value
+            var discountElement = document.querySelector('#discount_value');
+            if (discountElement) {
+                discountElement.textContent = '$' + data.discount;
+            } else {
+                console.log('Discount element not found.');
+            }
+
+            // Calculate the new total amount based on the discount
+            // var totalAmount = parseFloat('{{ total }}');  // Use the initial total from Django template
+            var totalAmount = document.getElementById('total_value').innerHTML
+            var newTotal = totalAmount - data.discount;
+            var totalElement = document.querySelector('#total_value');
+            if (totalElement) {
+                totalElement.textContent = newTotal.toFixed(2);
+            } else {
+                console.log('Total element not found.');
+            }
+
+             // Update the messages container with new messages
+             var messagesContainer = document.querySelector('#messages-container');
+            if (data.message) {
+                messagesContainer.innerHTML = data.message;  // Assuming you return messages in the JSON response
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
+
+<script>
+
+// Assuming you have a Cash on Delivery radio button
+document.getElementById('f-option5').addEventListener('change', function() {
+    document.getElementById('payment_method').value = 'COD';
+});
+
+document.getElementById('f-option6').addEventListener('change', function() {
+    document.getElementById('payment_method').value = 'wallet';
+});
+
+var couponApplied = false; // Initialize a flag to keep track of coupon application
+
+document.getElementById('categoryOffer').addEventListener('click', function() {
+    if (!couponApplied) { // Check if the coupon has not been applied yet
+        var discount = document.getElementById('dcategory').value;
+        var totalAmount = document.getElementById('total_value').innerHTML;
+        var x = totalAmount * (discount / 100);
+
+        var offerdiscount = document.querySelector('#offer_discount');
+        x = x.toFixed(2);
+        offerdiscount.textContent = x;
+
+        var newTotal = totalAmount - x;
+        var totalElement = document.querySelector('#total_value');
+        newTotal = newTotal.toFixed(2);
+        totalElement.textContent = newTotal;
+
+        couponApplied = true; // Set the flag to indicate that the coupon has been applied
+    }
+});
+
+
+</script>
+<!-- Include the PayPal JavaScript SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=ARLPuuWUpLJXh4sc6YVHU2jVm-5aEFfaXqW5HDlvVaLQI5L5UzJEE1SM1ShGwHNwIvbRXRc0JUnW8d7j&currency=USD&disable-funding=credit,card"></script>
+
+<script>
+    var total = '{{ final_price }}'
+    // Render the PayPal button into #paypal-button-container
+    paypal.Buttons({
+
+        style: {
+            color:  'blue', 
+            shape:  'pill',
+        },
+
+        // Set up the transaction
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value:'{{ total }}'
+                    }
+                }]
+            });
+        },
+
+        // Finalize the transaction
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                // Show a success message to the buyer
+                //submitFormData()
+                document.getElementById('payment_method').value = 'PayPal';
+                document.getElementById("paymentform").submit();
+                alert('Transaction completed by' + details.payer.name.given_name + '!');
+            });
+        }
+
+    }).render('#paypal-button-container');
+</script>
+
+
+{% endblock payment-gateway %}

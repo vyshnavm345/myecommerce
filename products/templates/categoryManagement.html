@@ -1,0 +1,196 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container h-25">
+    <div class="container-fluid">
+        <div class="row">
+            {% for message in messages %}
+                    <p class="alert alert-{{message.tags}}">{{message}}</p>
+            {% endfor %}
+            <script>
+                setTimeout(() => {
+                    $(".alert").alert("close");
+                }, 3000)
+            </script>
+            <div class="col-md-4" >  
+                {% if form %}
+                    <div class="card cards" id="total-orders" >
+                        
+                        <h2 class="mt-4">{% if updating == True %} Update Category {% else %} Add Category {% endif %}</h2>
+                        
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="categoryDescription" class="form-label">Category</label>
+                                        {{form.category_name}}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="categoryDescription" class="form-label">Description</label>
+                                        {{form.description}}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if subform %}
+                    <div class="card cards" id="total-orders" >
+                        <h2 class="mt-4">{% if updating == True %} Update Category {% else %} Add Category {% endif %}</h2>
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                {% if updating %}
+                                <form method="post" action="{% url 'add_sub_categorynew' subcategory.id %}">
+                                {% elif updating == False %}
+                                <form method="post" action="{% url 'add_sub_category' %}"></form>
+                                {% endif %}
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="{% if updating %}update{% else %}add{% endif %}">
+                                    <div class="mb-3">
+                                        <label for="subcategoryName" class="form-label">Subcategory Name</label>
+                                        {{ subform.category }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="subcategoryName" class="form-label">Subcategory Name</label>
+                                        {{ subform.name }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="subcategoryDescription" class="form-label">Description</label>
+                                        {{ subform.description }}
+                                    </div>
+                                    {% if updating %}
+                                        <button type="submit" class="btn btn-primary"  >Update</button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-primary"  >Add</button>
+                                    {% endif %}
+                                    
+                                </form>                               
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+            <div class="col-md-4" >
+                <div class="card cards" id="orders-delivered">
+                    <h2 class="mt-4">Search Category</h2>
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            {% if categories %}
+                            <form method="get" action="{% url 'admin_category' %}">
+                            {% elif subcategories %}
+                            <form method="get" action="{% url 'subCategory' id %}">
+                            {% endif %}
+                                <div class="mb-3">
+                                    <label for="searchName" class="form-label">Category Name</label>
+                                    <input type="text" class="form-control" id="searchName" name="q" placeholder="Enter category name" value="{{search_query}}">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h3 class="card-title">Category List</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Description</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if categories %}
+                                {% for category in categories %}
+                                    <tr>
+                                        <form action="POST"></form>
+                                            <td><a href="{% url 'subCategory' category.id %}">{{ category.category_name }}({{ category.subcategories.count }})</a></td>
+                                            <td>{{ category.description }}</td>
+                                        </form>
+                                            <td><a class="btn btn-info btn-sm" href="{% url 'editCategory' category.id %}">Edit</a></td>
+                                        
+                                        <td><a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModalCenter{{ category.id }}" >Delete</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            
+                            {% if subcategories %}
+                                {% for subcategory in subcategories %}
+                                    <tr>
+                                        <form action="POST"></form>
+                                            <td>{{ subcategory.name }}({{ subcategory.product_set.count }})</td>
+                                            <td>{{ subcategory.description }}</td>
+                                        </form>
+                                            <td><a type="Submit" class="btn btn-info btn-sm" href="{% url 'editsubCategory' subcategory.id %}">Edit</a></td>
+                                        
+                                        <td><a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModalCenter{{ subcategory.id }}" >Delete</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+</div>
+
+<!--    Modal for deleting user-->
+{% if categories %}
+    {% for category in categories %}
+    <div class="modal fade" id="exampleModalCenter{{ category.id }}" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="exampleModalCenterTitle">Delete User</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure want to delete "{{ category.category_name }}" ?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <a href="{% url 'deleteCategory' category.id %}" type="button" class="btn btn-outline-danger">Delete</a>
+        </div>
+        </div>
+    </div>
+    </div>
+    {% endfor %}
+{% endif %}
+{% if subcategories %}
+    {% for category in subcategories %}
+        <div class="modal fade" id="exampleModalCenter{{ category.id }}" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="exampleModalCenterTitle">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure want to delete "{{ category.name }}" ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'deletesubCategory' category.id %}" type="button" class="btn btn-outline-danger">Delete</a>
+            </div>
+            </div>
+        </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
+{% endblock body %}
