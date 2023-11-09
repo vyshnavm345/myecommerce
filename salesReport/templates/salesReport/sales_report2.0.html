@@ -67,6 +67,42 @@
                 </table>
             </div>
         </div>
+        <!-- <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                DataTable Example
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Sales per Day</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Sales per Day</th>
+                            <th>Total Sales</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for item in daily_sales_data %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{item.order_date_day}}</td>
+                            <td>{{item.sales_count}}</td>
+                            <td>{{item.total_sales|floatformat:2}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div> -->
         <div class="row">
             <div class="col-xl-6">
                 <div class="card mb-4">

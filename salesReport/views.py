@@ -25,6 +25,9 @@ def sales_report(request):
                 Q(order_date_day__gte=start_month) & Q(order_date_day__lte=end_month)
             )
             
+            current_orders = Orders.objects.filter(order_date__range=(start_month, end_month))
+            
+            
             formatted_dates = [entry['order_date_day'].strftime('%d-%B') for entry in daily_sales_data]
             sales_count = [entry['sales_count'] for entry in daily_sales_data]
             total_amounts = [float(entry['total_sales']) for entry in daily_sales_data]
@@ -41,7 +44,7 @@ def sales_report(request):
             total_monthly_sales = [float(entry['total_sales']) for entry in monthly_sales_data]
     else:
         form = DateRangeForm()
-        
+        current_orders = Orders.objects.all()
         
         daily_sales_data = Orders.objects.annotate(
             order_date_day=TruncDate('order_date')
@@ -73,6 +76,7 @@ def sales_report(request):
         "formatted_months" : formatted_months,
         "sales_count" : sales_count,
         "form" : form,
+        "current_orders": current_orders,
     }
     
     return render(request, "salesReport/sales_report.html", context)

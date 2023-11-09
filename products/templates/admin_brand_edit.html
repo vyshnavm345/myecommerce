@@ -1,0 +1,28 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block body %}
+
+
+{% for message in messages %}
+    <p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+    setTimeout(() => {
+        $(".alert").alert("close");
+    }, 3000)
+</script>
+<div class="container">
+    <div class="row">
+        <h4> Edit Brand</h4>
+        <div>
+            <form action="{% url 'edit_brand' brand.id %}" method="post">
+                {% csrf_token %}
+                <input name="brand_name" type="text" value="{{brand.brand_name}}">
+                <button>update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

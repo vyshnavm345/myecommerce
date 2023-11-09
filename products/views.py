@@ -20,8 +20,10 @@ from django.utils import timezone
 from referals.models import ReferenceProfile
 from decimal import Decimal
 from django.http import FileResponse
+from django.views.decorators.cache import never_cache
 
 # Create your views here.
+@never_cache
 def home(request):
     products = Product.objects.all().order_by('product_name')
     subcategory = SubCategory.objects.get(name='Laptops')
@@ -53,7 +55,10 @@ def home(request):
     }
     return render(request, "shop_home_page.html", context)
 
+@never_cache
 def userLogin(request):
+    if request.user.is_authenticated:
+        return redirect("home")
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -92,7 +97,10 @@ def userSignup(request):
     context = {"form": form}
     return render(request, "signup.html", context)
 
+@never_cache
 def otpview(request):
+    if request.user.is_authenticated:
+        return redirect("home")
     context = { }
     if 'otp_count' not in request.session:
         request.session['otp_count'] = 3
@@ -175,12 +183,14 @@ def otpview(request):
                       
     return render(request, "shop_otp.html", context)
 
+@never_cache
 def resend_otp(request):
     request.session['otp_count']-=1
     request.session['otp_issued'] = False
     return redirect("otp")
    
 def userLogout(request):
+    request.session.clear()
     logout(request)
     return redirect('userLogin')
     
@@ -753,6 +763,7 @@ def view_product(request, pk):
     }
     return render(request, "adminproductpage.html", context)
 
+@never_cache
 @custom_login_required_with_message
 def customer_profile(request, pk):
     user = Custom_User.objects.get(id=pk)
@@ -764,7 +775,7 @@ def customer_profile(request, pk):
 
 
 # Wishlist
-
+@never_cache
 @custom_login_required_with_message
 def view_wishlist(request):
     user_wishlist = Wishlist.objects.filter(user=request.user)
@@ -775,7 +786,8 @@ def view_wishlist(request):
     
     return render(request, "shop_customer_wishlist.html", context)
     
-
+@never_cache
+@custom_login_required_with_message
 def add_to_wishlist(request, pk):
     if request.method == "POST":
         pass
@@ -809,6 +821,7 @@ def add_to_wishlist(request, pk):
     
     return render(request, "shop_customer_wishlist.html", context)
 
+@never_cache
 @custom_login_required_with_message
 def remove_wishlist_item(request, pk):
     user_wishlist = Wishlist.objects.filter(user=request.user)
@@ -822,6 +835,7 @@ def remove_wishlist_item(request, pk):
     return redirect("view_wishlist")
     
 # cart
+@never_cache
 @custom_login_required_with_message
 def view_cart(request):
     items = []
@@ -843,7 +857,7 @@ def view_cart(request):
     } 
     return render(request, "shop_customer_cart.html", context)
 
-
+@never_cache
 @custom_login_required_with_message
 def add_to_cart(request, pk):
     
@@ -934,7 +948,7 @@ def remove_cart(request):
 def add_profile_img(request):
     context = {}
     
-    
+@never_cache 
 def edit_user_profile(request):
     user = request.user
     if request.method == "GET":
@@ -969,7 +983,8 @@ def edit_user_profile(request):
            
     return render(request, "shop_customer_profile.html", context)
 
-
+@never_cache
+@custom_login_required_with_message
 def customer_adressView(request):
     form = AddressForm()
     user = request.user
@@ -982,7 +997,8 @@ def customer_adressView(request):
     return render(request, "shop_customer_adress.html", context)
 
       
-        
+@never_cache
+@custom_login_required_with_message      
 def customer_add_address(request):
     addresses = Address.objects.filter(user=request.user , is_removed=False)
    
@@ -1008,7 +1024,8 @@ def customer_add_address(request):
     return render(request, "shop_customer_adress.html", context)
 
 
-
+@never_cache
+@custom_login_required_with_message
 def checkout(request):
     user=request.user
     try:
@@ -1186,6 +1203,8 @@ def payment_done(request):
 
     return redirect("order_confirmation")
 
+@never_cache
+@custom_login_required_with_message
 def order_confirmation(request):
     # retreving data from the sessions
     order_id = request.session.get('order_id')
@@ -1209,6 +1228,8 @@ def order_confirmation(request):
     }
     return render(request, "shop_confirmation.html", context)
 
+@never_cache
+@custom_login_required_with_message
 def orders(request):
     user = request.user
     orders = Orders.objects.filter(user=user).order_by('-order_date')
@@ -1231,6 +1252,8 @@ def orders(request):
     }
     return render(request, "shop_customer_orders.html", context)
 
+@never_cache
+@custom_login_required_with_message
 def order_details(request, pk):
     order = Orders.objects.get(id=pk)
     created_order_items = order.orderitems_set.all()
@@ -1255,6 +1278,7 @@ def order_details(request, pk):
     }
     return render(request, "shop_customer_order_details.html", context)
 
+@custom_login_required_with_message
 def cancel_order(request , pk):
     try:
         customer_wallet = Wallet.objects.get(user = request.user)
@@ -1349,6 +1373,8 @@ def password_reset(request):
     context={}
     return render(request, "shop_password_reset.html", context)
 
+@never_cache
+@custom_login_required_with_message
 def edit_address(request, pk):
     address = Address.objects.get(id=pk)
     if request.method == "POST":
@@ -1365,12 +1391,16 @@ def edit_address(request, pk):
     }
     return render(request, "shop_customer_adress.html", context)
 
+
+@custom_login_required_with_message
 def remove_address(request, pk):
     address = Address.objects.get(id=pk)
     address.is_removed = True
     address.save()
     return redirect("customer_adress")
 
+@never_cache
+@custom_login_required_with_message
 def return_order(request, pk):
     order_items = OrderItems.objects.get(id=pk)
     if request.method == "POST":
@@ -1414,6 +1444,7 @@ def return_order(request, pk):
     }
     return render(request, "shop_customer_return.html", context)
 
+@never_cache
 def product_return_status(request, pk):
     order_item = OrderItems.objects.get(id=pk)
     order = Orders.objects.get(id=order_item.order.id)
@@ -1475,7 +1506,8 @@ def admin_add_product_stock(request, pk):
         product.stock_quantity+=qty
         product.save()
         return redirect('admin_inventory_list')
-    
+
+@never_cache  
 def product_category(request):
     products = Product.objects.all()
     search_query = request.GET.get('q', '')
@@ -1589,7 +1621,8 @@ def filter_products(request):
     return JsonResponse({'error': 'Invalid request'})
 
 
-    
+@never_cache
+@custom_login_required_with_message    
 def view_coupons(request):
     user = request.user
     user_coupons = UserCoupons.objects.filter(user=user)
@@ -1693,8 +1726,15 @@ def admin_brand(request):
 
 def edit_brand(request, pk):
     brand = Brand.objects.get(id=pk)
-    # brand.brand_name = ...
-    
+    if request.method == "POST":
+        name = request.POST['brand_name']
+        brand.brand_name = name
+        brand.save()
+        return redirect("admin_brand")
+    context = {
+        "brand": brand
+    }
+    return render(request, "admin_brand_edit.html", context)
 
 def add_review(request, pk):
     if request.method == 'POST':

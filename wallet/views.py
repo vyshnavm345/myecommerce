@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import Wallet, Transaction
 from decimal import Decimal
+from products.decorators import custom_login_required_with_message
 
-
+@custom_login_required_with_message
 def wallet_view(request):
     try:
         wallet = Wallet.objects.get(user = request.user)
@@ -17,6 +18,7 @@ def wallet_view(request):
     }
     return render(request, "wallet/walletview.html", context)
 
+
 def new_wallet(request):
     wallet = Wallet.objects.create(user=request.user, balance=0)
     try:
@@ -26,6 +28,7 @@ def new_wallet(request):
         return redirect("wallet_view")
     except:
         pass
+
 
 def deposit_wallet(request):
     if request.method == "POST":
