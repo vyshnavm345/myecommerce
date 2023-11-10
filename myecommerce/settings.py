@@ -152,11 +152,11 @@ EMAIL_USE_SSL = False
 
 
 CORS_ALLOWED_ORIGINS = [
-   "http://51.20.128.236",
-    "http://51.20.128.236/"
+   "http://51.20.125.151",
+    "http://51.20.125.151/"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://51.20.128.236",
-    "http://51.20.128.236/"
+    "http://51.20.125.151",
+    "http://51.20.125.151/"
 ]
