@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-y(tm@171dx$=&k+wswr$k#ha3q5#mhj3&=&-m+z1$balin&hz_
 DEBUG = True
 
 # ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['51.20.128.236', "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ['51.20.128.236', "0.0.0.0", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -44,13 +44,13 @@ INSTALLED_APPS = [
     "referals",
     "orderInvoice",
     "salesReport",
-    "corsheaders",
+    # "corsheaders",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+    # "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -151,12 +151,18 @@ EMAIL_HOST_PASSWORD = 'ymdm cgez watr lhil'
 EMAIL_USE_SSL = False
 
 
-CORS_ALLOWED_ORIGINS = [
-   "http://51.20.125.151",
-    "http://51.20.125.151/"
-]
+# CORS_ALLOWED_ORIGINS = [
+#    "http://51.20.125.151",
+#    "http://51.20.125.151/",
+#     "www.cybershopping.shop",
+#     "http://www.cybershopping.shop",
+#     "htpps://www.cybershopping.shop"
+# ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://51.20.125.151",
-    "http://51.20.125.151/"
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://51.20.125.151",
+#     "http://51.20.125.151/",
+#     "www.cybershopping.shop",
+#     "http://www.cybershopping.shop",
+#     "htpps://www.cybershopping.shop"
+# ]

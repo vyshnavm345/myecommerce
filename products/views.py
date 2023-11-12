@@ -95,7 +95,7 @@ def userSignup(request):
             messages.error(request, 'Error invalid credentials')
                    
     context = {"form": form}
-    return render(request, "signup.html", context)
+    return render(request, "shop_register.html", context)
 
 @never_cache
 def otpview(request):
@@ -103,10 +103,11 @@ def otpview(request):
         return redirect("home")
     context = { }
     if 'otp_count' not in request.session:
-        request.session['otp_count'] = 3
+        request.session['otp_count'] = 30
         
     if request.method == 'POST':
         otp = request.POST['otp'].strip()
+        print(otp)
         
         otp_secret_key = request.session['otp_secret_key']
         otp_valid_date = request.session['otp_valid_date']
@@ -176,7 +177,7 @@ def otpview(request):
         else:
             messages.info(request,'Something went wrong')
     if request.session['otp_issued'] == False:
-        if request.session['otp_count'] > 0:
+        if request.session['otp_count']:
             send_otp(request)
         else:
             messages.info(request,'exceeded resend otp count')
@@ -417,11 +418,14 @@ def add_new_product(request, pk):
             category = product_inst.category
             product = category.category_name
             product_type = product.upper()
+            print("PRODUCT NAME : ", product)
+
             product = f"assets/img/{ product}.jpg"
         
         elif action == 'Add':
             category = Category.objects.get(id=pk)
             product = category.category_name
+            print("PRODUCT NAME : ", product)
             product_type = product.upper()
             product = f"assets/img/{ product}.jpg"
             
@@ -429,6 +433,7 @@ def add_new_product(request, pk):
         category = Category.objects.get(id=pk)
         product = category.category_name
         product_type = product.upper()
+        print("PRODUCT NAME : ", product)
         product = f"assets/img/{ product}.jpg"
     
     subcategories = category.subcategories.all()
@@ -481,7 +486,7 @@ def add_new_product(request, pk):
                 "product_inst" : pk,
                 
             }
-          
+            print("PRODUCT: ",product)
             return render(request, "addProductForm.html", context)
         
         if action == 'Update':
@@ -529,7 +534,7 @@ def add_new_product(request, pk):
         # Handle the case where form_class is None, e.g., by returning an error response
         return redirect('add_product')
     
-    
+    print("PRODUCT: ",product)
     context = {
         "product_fields" : product_fields,
         "category" : category,
@@ -549,7 +554,9 @@ def delete_product(request, pk):
     return redirect('product_list')
 
 def soft_deleted(request):
-    soft_deleted_products = Product.all_objects.all()
+    # soft_deleted_products = Product.all_objects.all()
+    soft_deleted_products = Product.removed_products.all()
+    
     paginator = Paginator(soft_deleted_products, 5)
 
     page_number = request.GET.get('page')
@@ -558,7 +565,7 @@ def soft_deleted(request):
     context = {
         "products": products_page,
     }
-    return render(request, 'product_list.html', context)
+    return render(request, 'soft_deleted_products.html', context)
     
 def edit_category(request, pk):
     category = get_object_or_404(Category, id=pk)  # Retrieve the category or return a 404 if not found

@@ -302,7 +302,7 @@ $(document).ready(function () {
         
             // Iterate through the filtered products and create HTML elements
             data.filtered_products.forEach(function (product) {
-                var productHTML = `
+                var productHTML = ` 
                 <div class="row">
                 <div class="col-lg-4 col-md-6">
                 <a href="${product.product_detail_url}">

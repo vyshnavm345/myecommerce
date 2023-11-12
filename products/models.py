@@ -127,6 +127,10 @@ class ProductManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(product_is_deleted=False)
 
+class SoftDeletedProducts(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(product_is_deleted=True)
+
 class  Product(models.Model):
     product_name = models.CharField(max_length=100)
     description = models.TextField()
@@ -142,6 +146,8 @@ class  Product(models.Model):
     specification = models.TextField(null=True, blank=True)
     
     objects = ProductManager()
+    
+    removed_products = SoftDeletedProducts()
     
     all_objects = models.Manager()
     
