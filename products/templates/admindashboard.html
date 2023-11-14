@@ -78,6 +78,10 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Offers
                             </a>
+                            <a class="nav-link" href="{% url 'category_offers' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Category Offers
+                            </a>
                             <a class="nav-link" href="{% url 'admin_brand' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Brands
@@ -136,8 +140,9 @@
                             </a>
                             <a class="nav-link" href="{% url 'included_del_items' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                                All_Products
+                                Removed_Products
                             </a>
+                            
                             <a class="nav-link" href="{% url 'included_del_cat' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Deleted Categories
@@ -146,6 +151,7 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Deleted Sub-Categories
                             </a>
+                            
 
                         </div>
                     </div>

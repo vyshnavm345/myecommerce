@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
-from .models import Custom_User, Product, Pc, Monitor, Keyboard, Category, SubCategory, Headphone, Address, Return, Offers
+from .models import Custom_User, Product, Pc, Monitor, Keyboard, Category, SubCategory, Headphone, Address, Return, Offers, Category_offer
 from django import forms
 class CreateUserForm(UserCreationForm):
     status = forms.ChoiceField(
@@ -21,7 +21,17 @@ class CreateUserForm(UserCreationForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = '__all__'  
+        fields = '__all__'
+        
+    def __init__(self, *args, **kwargs):
+        super(ProductForm, self).__init__(*args, **kwargs)
+        
+        for key, value in self.fields.items():
+            value.widget.attrs.update({"class" : "form-control"})
+            
+        self.fields['is_variant'].widget.attrs.pop("class", None)
+        # self.fields['rgb_support'].widget.attrs.pop("class", None)
+        # self.fields['is_variant'].widget = forms.CheckboxInput()
 
 class PcForm(ProductForm):
     class Meta:
@@ -37,6 +47,17 @@ class KeyboardForm(ProductForm):
     class Meta:
         model = Keyboard
         exclude = ['product_ptr']
+    
+    def __init__(self, *args, **kwargs):
+        super(KeyboardForm, self).__init__(*args, **kwargs)
+        
+        # for key, value in self.fields.items():
+        #     value.widget.attrs.update({"class" : "form-control"})
+            
+        self.fields['rgb_support'].widget.attrs.pop("class", None)
+    
+    
+
 
 class HeadphoneForm(ProductForm):
     class Meta:
@@ -82,4 +103,14 @@ class MainOfferForm(forms.ModelForm):
         fields = '__all__' 
         widgets = {
             "description": forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 25rem;'}),
+        }
+
+
+class CategoryOfferForm(forms.ModelForm):
+    class Meta:
+        model = Category_offer
+        fields = '__all__'
+        widgets = {
+            "description": forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 25rem;'}),
+            "category": forms.Select(attrs={'class': 'form-control'}),
         }

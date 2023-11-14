@@ -1,0 +1,57 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block head %}
+    <style>
+        body {
+            background-image: url('{% static link %}');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        label {
+            color: rgb(255, 255, 255);
+            font-size: 16px; /* Adjust the font size as needed */
+            font-weight: bold; /* Make the text bold, if desired */
+            margin-bottom: 5px; /* Add some spacing between labels */
+        }
+        .d-inline-flex > div {
+            margin-right: 20px; /* Adjust the margin as needed */
+        }
+        .custom-textarea {
+            height: 150px; /* Adjust the height as needed */
+        }
+        h2 {
+            color: rgb(255, 255, 255); 
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+<div class="container">
+    {% for message in messages %}
+        <p class="alert alert-{{message.tags}}">{{message}}</p>
+    {% endfor %}
+    <div class="col-10" style="padding: 100px; padding-top: 50px;" >
+        <div class="row-cols-8" style="display: contents;">           
+            <form method="post" enctype="multipart/form-data" name="action"  action="{% url 'edit_variant' product.id %}">
+                    {% csrf_token %}
+                <div class="mb-3">
+                    <label  class="form-label">Color</label>
+                    <input type="text" name="color" class="form-control"  placeholder="color">
+                </div>           
+                <div class="mb-3">
+                    <label  class="form-label">Price</label>
+                    <input type="number" name="price" class="form-control" placeholder="Price">
+                </div>
+                <div class="mb-3">
+                    <label  class="form-label">Stock Quantity</label>
+                    <input type="number" name="quantity" class="form-control" placeholder="Stock Quantity">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+    
+{% endblock body %}

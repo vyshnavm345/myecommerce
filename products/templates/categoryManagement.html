@@ -15,12 +15,12 @@
             </script>
             <div class="col-md-4" >  
                 {% if form %}
-                    <div class="card cards" id="total-orders" >
+                    <div class="card" id="total-orders" style="width: 500px; background-color: rgb(231, 231, 213); padding: 25px">
                         
                         <h2 class="mt-4">{% if updating == True %} Update Category {% else %} Add Category {% endif %}</h2>
                         
-                        <div class="card mt-4">
-                            <div class="card-body">
+                        
+                            
                                 <form method="post">
                                     {% csrf_token %}
                                     <div class="mb-3">
@@ -33,16 +33,16 @@
                                     </div>
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
-                            </div>
-                        </div>
+                           
+                       
                     </div>
                 {% endif %}
 
                 {% if subform %}
-                    <div class="card cards" id="total-orders" >
+                    <div class="card " id="total-orders"  style="width: 500px; background-color: rgb(231, 231, 213); padding: 25px">
                         <h2 class="mt-4">{% if updating == True %} Update Category {% else %} Add Category {% endif %}</h2>
-                        <div class="card mt-4">
-                            <div class="card-body">
+                        
+                            
                                 {% if updating %}
                                 <form method="post" action="{% url 'add_sub_categorynew' subcategory.id %}">
                                 {% elif updating == False %}
@@ -69,17 +69,17 @@
                                     {% endif %}
                                     
                                 </form>                               
-                            </div>
-                        </div>
+                           
+                        
                     </div>
                 {% endif %}
 
             </div>
-            <div class="col-md-4" >
-                <div class="card cards" id="orders-delivered">
+            
+                <div class="card cards" id="orders-delivered"  style="width: 500px; background-color: rgb(231, 231, 213); padding: 25px; margin-left:60px;">
                     <h2 class="mt-4">Search Category</h2>
-                    <div class="card mt-4">
-                        <div class="card-body">
+                    
+                        
                             {% if categories %}
                             <form method="get" action="{% url 'admin_category' %}">
                             {% elif subcategories %}
@@ -91,10 +91,10 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary">Search</button>
                             </form>
-                        </div>
-                    </div>
+                     
+                  
                 </div>
-            </div>
+        
 
 
             <div class="card mt-4">

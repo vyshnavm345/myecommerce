@@ -162,6 +162,7 @@ setTimeout(() => {
                                     </div>
                                     
                          <!-- show wallet if the user has wallet or give the option to create wallet -->
+                                    {% if has_wallet %}
                                     <div class="payment_item">
                                         <div class="radion_btn">
                                             <input type="radio" id="f-option6" name="payment_method" value="wallet">
@@ -169,6 +170,7 @@ setTimeout(() => {
                                             <div class="check"></div>
                                         </div>
                                     </div>
+                                    {% endif %}
                                     <div class="payment_item active">
                                         <div id="paypal-button-container"></div>
                                             <!-- <p></p> -->
@@ -218,8 +220,15 @@ setTimeout(() => {
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     // Attach a click event handler to the "Apply Coupon" button
+
+    var spclcouponApplied = false;
     document.querySelector('#apply_coupon_button').addEventListener('click', function() {
-        // Get the coupon code input value
+
+
+        
+        if (!spclcouponApplied) {
+
+            // Get the coupon code input value
         var couponCode = document.querySelector('#coupon_code_input').value;
         console.log('Coupon Code:', couponCode);
 
@@ -258,6 +267,10 @@ setTimeout(() => {
         .catch(error => {
             console.error('Error:', error);
         });
+        spclcouponApplied = true;
+            
+        }
+        
     });
 });
 </script>

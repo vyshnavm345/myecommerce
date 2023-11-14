@@ -43,14 +43,30 @@
                         <th>Stock</th>
                         
                         <th>Actions</th>
-                        <th>Insert</th>
+                        <th>Insert varient</th>
+                        <th>View</th>
+                        <th>View Variant</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for product in products %}
                     <tr>
                         <td>
-                            <img src="{{ product.image.url }}" alt="{{ product.product_name }}" width="80">
+                            {% if product.image %}
+                                <!-- If the product has an image, use it -->
+                                <img src="{{ product.image.url }}" alt="{{ product.product_name }}" width="80">
+                            {% else %}
+                                <!-- If the product does not have an image, use an image from ProductImages -->
+                                {% with related_image=product.productimages_set.first %}
+                                    {% if related_image %}
+                                        <img src="{{ related_image.image.url }}" alt="{{ product.product_name }}" width="80">
+                                    {% else %}
+                                        <!-- If there is no related image, you can provide a default image or leave it empty -->
+                                        <!-- Example: -->
+                                        <img src="{% static 'path_to_default_image/default_image.jpg' %}" alt="{{ product.product_name }}" width="80">
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
                         </td>
                         <td>{{ product.product_name }}</td>
                         <td>{{ product.description }}</td>
@@ -63,11 +79,12 @@
                                 <input type="hidden" name="action" value="Edit">
                                 <button type="submit" class="btn btn-primary btn-sm" >	&nbsp; Edit	&nbsp;</button>
                             </form>
-                            
+                            <br>
                             <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModalCenter{{ product.id }}" >Delete</a>
                         </td>
-                        <td><a class="btn btn-warning btn-sm" href="{% url 'add_images' product.id%}">Add</a></td>
-                        <td><a class="btn btn-info btn-sm" href="{% url 'view_product' product.id %}">View</a></td>
+                        <td><a class="btn btn-warning btn-sm" href="{% url 'add_images' product.id%}">Add Variant</a></td>
+                        <td><a class="btn btn-success btn-sm" href="{% url 'view_product' product.id %}">View</a></td>
+                        <td><a class="btn btn-info btn-sm" href="{% url 'admin_variant_view' product.id %}">View Variant</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

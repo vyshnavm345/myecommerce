@@ -1,0 +1,85 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+{% block head %}
+<style>
+    img {
+        width: 55px;
+        height: 55px;
+    }
+</style>
+{% endblock head %}
+{% block body %}
+
+
+{% for message in messages %}
+    <p class="alert alert-{{message.tags}}" >{{message}}</p>
+{% endfor %}
+<script>
+    setTimeout(() => {
+        $(".alert").alert("close");
+    }, 3000)
+</script>
+<div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            DataTable Example
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Color</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Color</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for variant in variants %}
+                    <tr>
+                        <td>{{ variant.product_name }}</td>
+                        <td>{{variant.stock_quantity}}</td>
+                        
+                        <td>{{variant.color}}</td>
+                        <td>{{variant.price}}</td>
+                        <td><a class="btn btn-primary btn-sm" style="margin-right: 3px;" href="{% url 'edit_variant' variant.id %}">edit</a><a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModalCenter{{ variant.id }}" >Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% for product in variants %}
+        <div class="modal fade" id="exampleModalCenter{{ product.id }}" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="exampleModalCenterTitle">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure want to delete "{{ product.product_name }}" ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'delete_product' product.id %}" type="button" class="btn btn-outline-danger">Delete</a>
+            </div>
+            </div>
+        </div>
+        </div>
+    {% endfor %}
+
+{% endblock body %}

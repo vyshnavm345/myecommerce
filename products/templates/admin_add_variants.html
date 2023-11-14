@@ -1,0 +1,94 @@
+{% extends 'admindashboard.html' %}
+{% load static %}
+
+{% block head %}
+    <style>
+       body {
+        background-image: url('{% static path %}');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    } 
+    label {
+            color: rgb(255, 255, 255);
+            font-size: 16px; /* Adjust the font size as needed */
+            font-weight: bold; /* Make the text bold, if desired */
+            margin-bottom: 5px; /* Add some spacing between labels */
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+    
+<div class="container" >
+
+    <div class="row justify-content">
+        <div class="col-md-10">
+            <a href="{% url 'product_list' %}" class="btn btn-dark my-3">Go Back</a>
+            <div class="card" style="background-color: transparent;">
+
+
+                <form method='POST' action="{% url 'add_images' product.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-group m-3">
+                        
+                        <label><h4>{{ product }}</h4></label>
+                    </div>
+                    <div class="form-group m-3">
+                        <label>{{ form.specification.label }}</label>
+                        {{form.specification}}
+                    </div>
+                    <div class="form-group m-3">
+                        <label>{{ form.description.label }}</label>
+                        {{form.description}}
+                    </div>
+                    <div class="form-group m-3">
+                        <label>{{ form.stock_quantity.label }}</label>
+                        {{form.stock_quantity}}
+                    </div>
+                    <div class="form-group m-3">
+                        <label>{{ form.color.label }}</label>
+                        {{form.color}}
+                    </div>
+                    <div class="form-group m-3">
+                        <label>{{ form.price.label }}</label>
+                        {{form.price}}
+                    </div>
+
+                    <div class="form-group m-3">
+                        <label>{{ form.ram.label }}</label>
+                        {{form.ram}}
+                    </div>
+                    <div class="form-group m-3">
+                        <label>{{ form.rgb_support.label }}</label>
+                        {{form.rgb_support}}
+                    </div>
+                    <div class="form-group m-3">
+                        <label>{{ form.headphone_type.label }}</label>
+                        {{form.headphone_type}}
+                    </div>
+                    <div class="form-group m-3">
+                        <label>{{ form.display_size.label }}</label>
+                        {{form.display_size}}
+                    </div>
+                    
+                    
+                    <div class="form-group m-3">
+                        <input name="colour" type="hidden" placeholder="Enter a colour"
+                            class="form-control" >
+                    </div>
+
+                    <div class="form-group m-3">
+                        <label>Upload images</label>
+                        <input required name="images" type="file" multiple class="form-control-file">
+                    </div>
+                    <button type='submit' class="btn btn-primary m-3">Submit</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

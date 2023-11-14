@@ -200,7 +200,26 @@
 					{% for product in products %}
 					<div class="col-lg-3 col-md-6 container">
 						<div class="single-product">
+								
+
+								{% if product.image %}
+								<!-- If the product has an image, use it -->
 								<a href="{% url 'product_detail' product.id %}"><img class="img-fluid" src="{{ product.image.url }}" alt="hover" ></a>
+							{% else %}
+								<!-- If the product does not have an image, use an image from ProductImages -->
+								{% with related_image=product.productimages_set.first %}
+									{% if related_image %}
+									<a href="{% url 'product_detail' product.id %}"><img class="img-fluid" src="{{ related_image.image.url }}" alt="hover" width="80"></a>
+									{% else %}
+										<!-- If there is no related image, you can provide a default image or leave it empty -->
+										<!-- Example: -->
+										<img src="{% static 'img/default.jpg' %}" alt="hover" width="80">
+									{% endif %}
+								{% endwith %}
+							{% endif %}
+
+
+
 							<div class="product-details">
 								<h6>{{product.product_name}}</h6>
 								<div class="price">
@@ -300,7 +319,30 @@
 					{% for product in products %}
 						<!-- single exclusive carousel -->
 						<div class="single-exclusive-slider">
-							<img class="img-fluid" src="{{ product.image.url }}" alt="">
+
+
+
+							
+
+							{% if product.image %}
+								<!-- If the product has an image, use it -->
+								<a href="{% url 'product_detail' product.id %}"><img class="img-fluid" src="{{ product.image.url }}" alt="hover" ></a>
+							{% else %}
+								<!-- If the product does not have an image, use an image from ProductImages -->
+								{% with related_image=product.productimages_set.first %}
+									{% if related_image %}
+									<a href="{% url 'product_detail' product.id %}"><img class="img-fluid" src="{{ related_image.image.url }}" alt="hover" width="80"></a>
+									{% else %}
+										<!-- If there is no related image, you can provide a default image or leave it empty -->
+										<!-- Example: -->
+										<img src="{% static 'img/default.jpg' %}" alt="hover" width="80">
+									{% endif %}
+								{% endwith %}
+							{% endif %}
+							
+							
+							
+							
 							<div class="product-details">
 								<div class="price">
 									<h6>{% if product.offer.is_active == True %}

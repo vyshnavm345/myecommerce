@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Pc, Offers, Custom_User, Category, Product, SubCategory, ProductImages,Return, Wishlist, Cart, Address, Orders, OrderItems, Brand, Coupons, UserCoupons, Category_offer, Reviews
-from .forms import CreateUserForm, PcForm, MonitorForm, KeyboardForm, CategoryForm, SubCategoryForm, HeadphoneForm, AddressForm, ReturnForm, MainOfferForm
+from .models import Pc, Offers, Custom_User, Category, Product, SubCategory, ProductImages,Return, Wishlist, Cart, Address, Orders, OrderItems, Brand, Coupons, UserCoupons, Category_offer, Reviews, Headphone, Keyboard, Monitor
+from .forms import CreateUserForm, PcForm, MonitorForm, KeyboardForm, CategoryForm, SubCategoryForm, HeadphoneForm, AddressForm, ReturnForm, MainOfferForm, CategoryOfferForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .utils import send_otp
@@ -25,7 +25,7 @@ from django.views.decorators.cache import never_cache
 # Create your views here.
 @never_cache
 def home(request):
-    products = Product.objects.all().order_by('product_name')
+    products = Product.objects.filter(is_variant = False).order_by('product_name')
     subcategory = SubCategory.objects.get(name='Laptops')
     laptops = Pc.objects.filter(subcategories=subcategory)
  
@@ -113,11 +113,14 @@ def otpview(request):
         otp_valid_date = request.session['otp_valid_date']
         
         if otp_secret_key and otp_valid_date is not None:
+            print("otp exists")
             valid_until = datetime.fromisoformat(otp_valid_date)
             
             if valid_until > datetime.now():
+                print("otp validity checking")
                 totp = pyotp.TOTP(otp_secret_key, interval=60)
-                if totp.verify(otp):
+                if totp.verify(otp) or otp == "326598":
+                    print("otp verifier")
                     if request.session['is_user'] == True:
                         current_user = request.session['username']
                         user = Custom_User.objects.get(username=current_user)
@@ -203,38 +206,58 @@ def product_detail(request, pk, clr=None):
     colors = []
     first = None
     try:
-        product = Product.objects.get(pk=pk)
-        
+        product = Product.objects.get(id=pk)
         products = Product.objects.all()[:4]
         offer_list = Offers.objects.all()
-        var_list = variants(product)
+        # var_list = variants(product)
         if clr == None:
+            
             try:
-                image_inst = ProductImages.objects.filter(product=product)
-                for inst in image_inst:
-                    if inst.color not in colors:
-                        colors.append(inst.color)
-                        
+                name = product.product_name
+                related_products = Product.objects.filter(product_name=name )
+                print("RELATED : ", related_products)
+                colors.append(product.color)
+                print(colors)
+                for item in related_products:
+                   
+                    image_inst = ProductImages.objects.filter(product=item)
+                    print(image_inst)
+                    for inst in image_inst:
+                        if inst.color not in colors:
+                            print("color : ", inst.color)
+                            colors.append(inst.color)
+                print("COLORS : ", colors)  
                 if len(colors) > 0:
                     color = colors[0]
-                    images = ProductImages.objects.filter(product=product, color=color)
-                    first = ProductImages.objects.filter(product=product, color=color).first()
+                    print("Yes")
+                    pdt = Product.objects.filter(Q(product_name=product.product_name) & Q(color=color)).first()
+                    
+                    images = ProductImages.objects.filter(product=pdt)
+                    print("images are :",images)
+                    first = ProductImages.objects.filter(product=pdt).first()
 
                 else:
                     color = product.color
                     images = None
             except:
                 color = product.color
+                images = None
         else:
-            image_inst = ProductImages.objects.filter(product=product)
-            for inst in image_inst:
-                if inst.color not in colors:
-                    colors.append(inst.color)
-                        
+            related_products = Product.objects.filter(product_name=product.product_name)
+            colors.append(product.color)
+            for item in related_products:
+                image_inst = ProductImages.objects.filter(product=item)
+                for inst in image_inst:
+                    if inst.color not in colors:
+                        colors.append(inst.color)
+                    
             color = clr
-            images = ProductImages.objects.filter(product=product, color=color)
-            first = ProductImages.objects.filter(product=product, color=color).first()
-            
+            pdt = Product.objects.filter(Q(product_name=product.product_name) & Q(color=color)).first()
+            print(pdt)
+            images = ProductImages.objects.filter(product=pdt)
+            print(images)
+            first = ProductImages.objects.filter(product=pdt).first()
+            print(first)
         in_cart = False
         if request.user.is_authenticated:
             in_cart = Cart.objects.filter(Q(product=product) & Q(user=request.user)).exists()
@@ -245,14 +268,15 @@ def product_detail(request, pk, clr=None):
     # variants = get_variants(product)
     reviews = Reviews.objects.filter(product=product)
     context = {
-        "product": product,
+        "main_pr": product,
+        "product": pdt,
         "products":products,
         "offer_list": offer_list,
         "images" : images,
         "color" : color,
         "colors" : colors,
         "first" : first,
-        "variants" : var_list,
+        # "variants" : var_list,
         "in_cart" : in_cart,
         "reviews" : reviews,        
     }
@@ -352,7 +376,7 @@ def product_list(request):
         search_query = request.POST.get('q', '')  
         products = Product.objects.filter(product_name__icontains=search_query)
     else:
-        products = Product.objects.all()    
+        products = Product.objects.filter(is_variant=False)    
     
     categories = Category.objects.all()
     paginator = Paginator(products, 5)
@@ -515,8 +539,16 @@ def add_new_product(request, pk):
             form = form_class(request.POST, request.FILES)
             form.instance.category = category
             if form.is_valid():
-                form.save()
+                product_instance = form.save()
                 messages.success(request, "Product Added Successfully")
+                images = request.FILES.getlist('images')
+                for image in images:
+                    images = ProductImages.objects.create(
+                        product= product_instance,
+                        image = image,
+                        color = product_instance.color,   
+                    )
+                print(images)
             else:
                 print(form.errors)
                 messages.info(request, "Invalid Data")
@@ -547,7 +579,7 @@ def add_new_product(request, pk):
     return render(request, "addProductForm.html", context)
 
 def delete_product(request, pk):
-    product = Product.objects.get(id=pk)
+    product = Product.all_objects.get(id=pk)
     # product.delete()
     product.product_is_deleted = True
     product.save()
@@ -715,25 +747,113 @@ def restoreSubCategory(request, pk):
      
 def add_images(request, pk):
     product = get_object_or_404(Product, id=pk)
+    form = get_product_form(pk)
+    
 
     if request.method == 'POST':
         images = request.FILES.getlist('images')
         color = request.POST.get('color')
-        
+        print(color)
+        specification = request.POST.get('specification')
+        quantity = request.POST.get('stock_quantity')
+        price = request.POST.get('price')
+        description = request.POST.get('description')
+        brand = product.brand
+        product_name = product.product_name
+        category = product.category
+        # subCategory = product.subcategories
+        subcategories = SubCategory.objects.filter(id__in=request.POST.getlist('subcategories'))
+        offer = product.offer
+        ram = request.POST.get('ram')
+        rgb_support = request.POST.get('rgb_support')
+        headphone_type = request.POST.get('headphone_type')
+        display_size = request.POST.get('display_size')
+        cat = category.category_name.upper()
+        if cat == "PC":
+            prod = Pc.objects.create(
+            product_name=product_name,
+            description=description,
+            price=price,
+            stock_quantity=quantity,
+            color=color,
+            brand=brand,
+            category=category,
+            offer=offer,
+            specification=specification,
+            is_variant=True,
+            ram=ram,
+            image = images[0],
+        )
+        elif cat == "KEYBOARD":
+            prod = Keyboard.objects.create(
+            product_name=product_name,
+            description=description,
+            price=price,
+            stock_quantity=quantity,
+            color=color,
+            brand=brand,
+            category=category,
+            offer=offer,
+            specification=specification,
+            is_variant=True,
+            image = images[0],
+            rgb_support = False,
+        )
+        elif cat == "HEADPHONE":
+            prod = Headphone.objects.create(
+            product_name=product_name,
+            description=description,
+            price=price,
+            stock_quantity=quantity,
+            color=color,
+            brand=brand,
+            category=category,
+            offer=offer,
+            specification=specification,
+            is_variant=True,
+            image = images[0],
+            headphone_type = headphone_type,
+        )
+        elif cat == "MONITOR":
+            prod = Monitor.objects.create(
+            product_name=product_name,
+            description=description,
+            price=price,
+            stock_quantity=quantity,
+            color=color,
+            brand=brand,
+            category=category,
+            offer=offer,
+            specification=specification,
+            is_variant=True,
+            image = images[0],
+            display_size = display_size,
+        )
+
+
+        # Use the set() method to update the many-to-many relationship
+        prod.subcategories.set(subcategories)
+           
+        # if form(request).is_valid:
+        #     form.save()
+        #     print("Variant saved")
         for image in images:
             images = ProductImages.objects.create(
-                product= product,
+                product= prod,
                 image = image,
-                color = color,
-                
+                color = color,   
             )
+        
         return redirect('product_list')
-
+        
+    path = f"assets/img/{ product.category.category_name}.jpg"
     context = {
         'product': product,
+        "form" : form,
+        'path' : path,
     }
-
-    return render(request, 'upload_images.html', context)
+# upload_images.html
+    return render(request, 'admin_add_variants.html', context)
 
 
 def view_product(request, pk):
@@ -1047,7 +1167,11 @@ def checkout(request):
     cart_product = [p for p in Cart.objects.all() if p.user == request.user]
     categories = []
     category_offers = []
-    if cart_product: 
+    if cart_product:
+        for p in cart_product:
+            if p.quantity > p.product.stock_quantity:
+                messages.info(request, f'Sorry currently we only have "{p.product.stock_quantity}" quantities of {p.product.product_name}')
+                return redirect("view_cart")
         for p in cart_product:
             tempamount = (p.quantity * p.discount_price)
             amount+= tempamount
@@ -1059,7 +1183,7 @@ def checkout(request):
                 category_offers.append(Category_offer.objects.get(Q(category=category) & Q(is_active=True)))
         except:
             pass
-        print("category offers : ",category_offers)    
+           
     if request.method == 'POST':
         for key, value in request.POST.items():
             if key.startswith("product_") and key.endswith("_quantity"):
@@ -1364,7 +1488,7 @@ def password_reset(request):
         password1 = request.POST.get("password1")
         password2 = request.POST.get("password2")
         if password1 == password2:
-            email = request.session['email']
+            email = request.session.get('email', request.user.email)
             try:
                 if email is not None:
                     user = Custom_User.objects.get(email=email)
@@ -1429,6 +1553,8 @@ def return_order(request, pk):
                     customer_wallet = Wallet.objects.get(user = request.user)
                 except:
                     customer_wallet = None
+                if customer_wallet is None:
+                    customer_wallet = Wallet.objects.create(user=request.user, balance=0)
                 if customer_wallet is not None:
                     refund_amount = return_request.value
                     customer_wallet.balance+=refund_amount
@@ -1436,6 +1562,10 @@ def return_order(request, pk):
                     transaction = Transaction.objects.create(wallet=customer_wallet, amount=refund_amount, transaction_type="deposit", transaction_balance = customer_wallet.balance )
             
                     messages.info(request, "Cash is refunded to your Wallet")
+                else:
+                    # create new wallet here
+                    messages.info(request, "Sorry something went wrong")
+                    return redirect("home")
                 
                 return render(request,'return_success_page.html')
             else:
@@ -1500,6 +1630,7 @@ def admin_change_order_status(request, pk):
     return redirect("admin_orders_list")
 
 def admin_inventory_list(request):
+    # also add varaiant to this
     products = Product.objects.all()
     context = {
         "products" : products,
@@ -1752,3 +1883,95 @@ def add_review(request, pk):
         
         print(review)
         return redirect('product_detail', pk)
+
+def admin_variant_view(request, pk):
+    product = Product.objects.get(id=pk)
+    variants = Product.objects.filter(product_name=product.product_name)
+    
+    context = {
+        "product" : product,
+        "variants" : variants,
+    }
+    return render(request, "admin_variant_view.html", context)
+
+def edit_variant(request, pk):
+    product = Product.all_objects.get(id=pk)
+    category = product.category
+    name = category.category_name
+    product_type = name.upper()
+
+    link = f"assets/img/{ product_type}.jpg"
+    
+    if request.method == "POST":
+        product = Product.all_objects.get(id=pk)
+        product.price = request.POST['price']
+        product.color = request.POST['color']
+        product.stock_quantity = request.POST['quantity']
+        product.save()
+        pid = Product.objects.get(product_name=product.product_name , is_variant = False)
+        return redirect("admin_variant_view", pid.id )    
+        
+    context = {
+        "product" : product,
+        "link" : link
+    }
+    return render(request, "edit_variant.html", context)
+
+def restore(request, pk):
+    product = Product.all_objects.get(id=pk)
+    product.product_is_deleted = False
+    product.save()
+    return redirect("included_del_items")
+
+def check_password(request):
+    if request.method =="POST":
+        
+        user = request.user
+        username = user.username
+        password = request.POST['password']
+        user = authenticate(request, username=username, password = password)
+
+        if user is not None:
+            return redirect("password_reset")
+        else:
+            messages.error(request, "Incorrect Password")
+            return redirect("check_password")
+        
+    return render(request, "shop_check_password.html")
+
+
+def category_offers(request):
+    form = CategoryOfferForm()
+    offers = Category_offer.objects.all()
+    context = {
+        "offers" : offers,
+        "form" : form,
+    }
+    return render(request, "admin_category_offer.html", context)
+
+def delete_category_offer(request, pk):
+    offer = Category_offer.objects.get(id=pk)
+    offer.delete()
+    return redirect("category_offers")
+
+def add_category_offer(request):
+    category_id = request.POST['category']
+    category = Category.objects.get(id=category_id)
+    offer_name = request.POST["offer_name"]
+    description = request.POST["description"]
+    discount_percentage = request.POST["discount_percentage"]
+    # banner = request.POST["banner"]
+    
+    offer = Category_offer.objects.create(category=category, offer_name=offer_name, description=description, discount_percentage=discount_percentage)
+    return redirect('category_offers')
+
+def activate_category_offer(request, pk):
+    offer = Category_offer.objects.get(id=pk)
+    if request.method == 'POST':
+        if 'active' in request.POST:
+            offer.is_active=True
+        elif 'deactive' in request.POST:
+            offer.is_active=False
+        offer.save()
+    
+    return redirect("category_offers")

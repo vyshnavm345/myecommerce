@@ -302,39 +302,39 @@ $(document).ready(function () {
         
             // Iterate through the filtered products and create HTML elements
             data.filtered_products.forEach(function (product) {
-                var productHTML = ` 
-                <div class="row">
+                var productHTML =  `
                 <div class="col-lg-4 col-md-6">
-                <a href="${product.product_detail_url}">
-                    <div class="single-product">
-                         <img class="img-fluid" src="${product.image_url}" alt="">
-                         
-                        <div class="product-details">
+            <a href="${product.product_detail_url}">
+                <div class="single-product">
+                    <img class="img-fluid" src="${product.image_url}" alt="">
+                    <div class="product-details">
+                        
                             <h6>${product.product_name}</h6>
                             <div class="price">
                                 <h6>₹${product.price}</h6>
                             </div>
-                            <div class="prd-bottom">
-                                <form action="" method="post">
-                                    <a href="{% url 'add_to_cart' 0 %}".replace('0', ${product.id}) class="social-info" type="submit">
-                                        <span class="ti-bag"></span>
-                                        <p class="hover-text">Cart</p>
-                                    </a>
-                                    <a href="{% url 'add_to_wishlist' 0 %}".replace('0', ${product.id}) class="social-info" type="submit">
-                                        <span class="lnr lnr-heart"></span>
-                                        <p class="hover-text">Wishlist</p>
-                                    </a>
-                                    <a href="" class="social-info">
-                                        <span class="lnr lnr-move"></span>
-                                        <p class="hover-text">view more</p>
-                                    </a>
-                                </form>
-                            </div>
+                        
+                        <div class="prd-bottom">
+                        <form action="" method="post">
+                        <a href="{% url 'add_to_cart' 0 %}".replace('0', ${product.id}) class="social-info" type="submit">
+                            <span class="ti-bag"></span>
+                            <p class="hover-text">Cart</p>
+                        </a>
+                        <a href="{% url 'add_to_wishlist' 0 %}".replace('0', ${product.id}) class="social-info" type="submit">
+                            <span class="lnr lnr-heart"></span>
+                            <p class="hover-text">Wishlist</p>
+                        </a>
+                        <a href="" class="social-info">
+                            <span class="lnr lnr-move"></span>
+                            <p class="hover-text">view more</p>
+                        </a>
+                        </form>
+                            
                         </div>
                     </div>
-                </a>
-            </div>
-            </div>`;
+                </div>
+            </a>
+        </div>`;
                 filteredProductsContainer.append(productHTML);
             });
         },

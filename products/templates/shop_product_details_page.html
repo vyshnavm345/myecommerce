@@ -98,6 +98,9 @@
 						<li><a href="#"><span>Availability</span> : {% if product.stock_quantity > 0 %} In Stock({{ product.stock_quantity }} pcs) {% else %} Out of stock{% endif %}</a></li>
 					</ul>
 					{% endif %}
+					{% if product.category.is_deleted %}
+					<h3>Currently not selling this Category products</h3>
+					{% else %}
 					<p>{{ product.description }}</p>
 						<div class="product_color_buttons">
 							{% if variants %}
@@ -106,20 +109,14 @@
 								{% endfor %}
 							{% endif %}
 							<br>
+							<h5>colors</h6>
 							{% for color in colors %}
-								<a href="{% url 'product_detail' product.id  color %}" >
+								<a href="{% url 'product_detail' main_pr.id  color %}" >
 									<button class="color-button"  style=" height: 30px; width: 30px; border-radius: 50%; margin-right: 10px; cursor: pointer; background-color: {{color}};" ></button>
 								</a>
 							{% endfor %}
 						</div>
-					<div class="product_count">
-						<label for="qty">Quantity:</label>
-						<input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
-						<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-						 class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-						<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-						 class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
-					</div>
+					<br><br>
 					<div class="card_area d-flex align-items-center">
 						{% if in_cart %}
 						<a class="primary-btn" href="{% url 'add_to_cart' product.id %}">Go to Cart</a>
@@ -129,6 +126,7 @@
 						{% endif %}
 						<a class="primary-btn" href="{% url 'add_to_wishlist' product.id %}"><i class="lnr lnr lnr-heart"></i></a>
 					</div>
+					{% endif %}
 				</div>
             </div>
 

@@ -50,7 +50,11 @@
     <div>
         {% if category_offer %}
             {% for category in category_offer %}
+            {% if category.banner %}
                 <div style="background-image: url({{category.banner.url}}); aspect-ratio: 69/7; margin-bottom: 1px;">
+            {% else %}
+            <div >
+            {% endif %}
                     <h1 style="    color: #e78b09;
                     align-items: center;
                     display: flex; padding: 20px;">{{ category.offer_name|upper }}</h1>
@@ -110,7 +114,7 @@
                                 {% for brand in brands %}
                                 <li class="brand-checkbox">
                                     <input class="pixel-radio" type="radio" 
-                                    name="brand" value="{{ brand.brand_name }}"><label for="{{ brand.brand_name }}">{{ brand.brand_name }}<span>(29)</span></label>
+                                    name="brand" value="{{ brand.brand_name }}"><label for="{{ brand.brand_name }}">{{ brand.brand_name }}</label>
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -187,8 +191,8 @@
             </div>
             <!-- End Filter Bar -->
             <!-- Start Best Seller -->
-            <section id="filtered-products-container" class="lattest-product-area pb-40 category-list">
-                <div class="row">
+            <section  class="lattest-product-area pb-40 category-list">
+                <div class="row" id="filtered-products-container">
                     {% for product in products %}
                     <!-- single product -->
                     <div class="col-lg-4 col-md-6">

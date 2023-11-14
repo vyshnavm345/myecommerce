@@ -34,7 +34,25 @@
                         {% csrf_token %}
                             <td>{{ product.id }}</td>
                             <td>
-                                <img src="{{ product.image.url }}" alt="{{ product.product_name }}" width="80">
+
+
+                                {% if product.image %}
+                                    <!-- If the product has an image, use it -->
+                                    <img src="{{ product.image.url }}" alt="{{ product.product_name }}" width="80">
+                                {% else %}
+                                    <!-- If the product does not have an image, use an image from ProductImages -->
+                                    {% with related_image=product.productimages_set.first %}
+                                        {% if related_image %}
+                                        <img class="img-fluid" src="{{ related_image.image.url }}" alt="hover" width="80">
+                                        {% else %}
+                                            <!-- If there is no related image, you can provide a default image or leave it empty -->
+                                            <!-- Example: -->
+                                            <img src="{% static 'img/default.jpg' %}" alt="hover" width="80">
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+
+
                             </td>
                             <td>{{ product.product_name }}</td>
                             <td>{{ product.stock_quantity }}</td>

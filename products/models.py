@@ -5,6 +5,7 @@ import datetime
 import secrets
 import random
 import string
+from django.db.models import Q
 
 
 def generate_coupon_code():
@@ -144,6 +145,7 @@ class  Product(models.Model):
     offer = models.ForeignKey(Offers, on_delete=models.DO_NOTHING, null=True, blank=True)
     product_is_deleted = models.BooleanField(default=False, null=True, blank=True)
     specification = models.TextField(null=True, blank=True)
+    is_variant = models.BooleanField(default=False)
     
     objects = ProductManager()
     
@@ -152,7 +154,7 @@ class  Product(models.Model):
     all_objects = models.Manager()
     
     def __str__(self) -> str:
-        return self.product_name
+        return f"{self.product_name}-{self.color}"
     
 
 # PC Model (inherits from Product)
@@ -189,7 +191,7 @@ class Monitor(Product):
 
 # Keyboard Model (inherits from Product)
 class Keyboard(Product):
-    rgb_support = models.BooleanField(default=False)
+    rgb_support = models.BooleanField(default=False, blank=True, null=True)
     
     class Meta:
         db_table = 'keyboard'  # Name of the database table for Keyboards   
@@ -225,7 +227,7 @@ class SubCategory(models.Model):
     
 
 class ProductImages(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE )
     image = models.ImageField(upload_to='uploads/product/', null=True, blank=True)
     color = models.CharField(max_length=50)
     

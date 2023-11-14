@@ -127,8 +127,28 @@ urlpatterns = [
     
     # rating
     path('add_review/<int:pk>/', views.add_review, name='add_review'),
+    path('admin_variant_view/<int:pk>/', views.admin_variant_view, name='admin_variant_view'),
     
-    # invoice PDF
+    
+    path('edit_variant/<int:pk>/', views.edit_variant, name='edit_variant'),
+    
+    # restore product
+    path('restore/<int:pk>/', views.restore, name='restore'),
+    
+    
+    path('check_password/', views.check_password, name='check_password'),
+    
+    
+    path('category_offers/', views.category_offers, name='category_offers'),
+    path('delete_category_offer/<int:pk>/', views.delete_category_offer, name='delete_category_offer'),
+    path('add_category_offers/', views.add_category_offer, name='add_category_offers'),
+    path('activate_category_offer/<int:pk>/', views.activate_category_offer, name='activate_category_offer'),
+    
+
+    
+    
+    
+    
    
 
     
