@@ -28,7 +28,7 @@ class ReferenceProfile(models.Model):
         return my_recs
     
     def get_referal_link(self):
-        return f"http://127.0.0.1:8000/referals/{self.code}"
+        return f"http://cybershopping.shop/referals/{self.code}"
     
     def save(self, *args, **kwargs):
         if self.code== '':

@@ -6,7 +6,7 @@ import secrets
 import random
 import string
 from django.db.models import Q
-
+from datetime import timedelta
 
 def generate_coupon_code():
     # Generate a random coupon code of 10 characters
@@ -17,6 +17,9 @@ def calculate_expiration_date():
     # Calculate the expiration date as 30 days from the current date
     return timezone.now() + timezone.timedelta(days=30)
 
+def currentTime():
+    x = (timezone.now() + timedelta(hours=11, minutes=00))
+    return x
 
 class Custom_User(AbstractUser):
     STATUS_CHOICES = [
@@ -251,7 +254,7 @@ class Orders(models.Model):
     username = models.CharField(max_length=150, blank=True)
     shipping_address = models.ForeignKey(Address, related_name='orders_shipping', on_delete=models.SET_NULL, null=True)
     billing_address = models.ForeignKey(Address, related_name='orders_billing', on_delete=models.SET_NULL, null=True)
-    order_date = models.DateTimeField(default=datetime.datetime.today)
+    order_date = models.DateTimeField(default=(timezone.now() + timedelta(hours=11, minutes=00)))
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Processing')
     tracking_id = models.CharField(max_length=50, blank=True, null=True)

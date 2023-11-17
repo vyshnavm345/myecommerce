@@ -28,6 +28,7 @@ def new_wallet(request):
         return redirect("wallet_view")
     except:
         pass
+    return redirect("wallet_view")
 
 
 def deposit_wallet(request):

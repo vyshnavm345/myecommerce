@@ -1263,7 +1263,8 @@ def payment_done(request):
             print("customer_wallet.balance After : ",customer_wallet.balance)
 
             transaction = Transaction.objects.create(wallet=customer_wallet, amount=total, transaction_type="withdrawal", transaction_balance = customer_wallet.balance )
-            coupon.is_used = True
+            if coupon_id is not None:
+                coupon.is_used = True
             messages.info(request, "Cash is debited from your Wallet")
         else:
             messages.info(request, "Sorry! Insufficient funds in your Wallet")

@@ -5790,3 +5790,7 @@ label {
     color: #ffba00; }
 
 /*# sourceMappingURL=main.css.map */
+.main_logo {
+  display: flex;
+  justify-content: center;
+}
