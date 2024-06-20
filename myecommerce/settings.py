@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-y(tm@171dx$=&k+wswr$k#ha3q5#mhj3&=&-m+z1$balin&hz_
 DEBUG = True
 
 # ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['51.20.128.236', "0.0.0.0", "localhost", "127.0.0.1", "https://www.cybershopping.shop"]
+ALLOWED_HOSTS = ['51.20.128.236', "0.0.0.0", "localhost", "127.0.0.1", "https://www.cybershopping.shop", ".vercel.app"]
 
 
 # Application definition
